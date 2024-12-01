@@ -94,3 +94,9 @@ class Database:
     def display_products(self, user_role):
         for product in self.products:
             product.display_product(user_role)
+
+    def get_product_by_id(self, product_id):
+        for product in self.products:
+            if product.id == product_id:
+                return product
+        return None

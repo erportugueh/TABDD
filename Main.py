@@ -52,10 +52,9 @@ def user_menu(db, user):
             print(f"Username: {user.username}")
             print(f"Role: {user.role}")
             print(f"Email: {user.email}")
-            if user.role == "Customer":
-                print(f"Customer ID: {user.customer_id}")
-            elif user.role == "Employee":
+            if user.role == "Employee":
                 print(f"Employee ID: {user.employee_id}")
+                
             print(f"\n--- End of Details ---")
         elif choice == "2":
             print("\n--- Product List ---")
