@@ -56,3 +56,7 @@ def login(request):
 def cart(request):
     # Aqui podes passar dados para o template se necessário
     return render(request, 'homepage/cart.html')
+
+#Página user com account 
+def homeUser(request):
+    return render(request, 'homepage/homeUser.html')
