@@ -1,0 +1,18 @@
+SChema_user
+USER: C##e_commerce
+PASSWORD:qKCH1brdHfWtMFadWdbzWeMJS3rHDJ
+Hostname: vsgate-s1.dei.isep.ipp.pt
+Port: 10434
+	
+ADMIN_USERS:
+	USER: C##admin_elmer
+	PASSWORD: AkNrX9qnAEQMO360inA4
+	
+	USER: C##admin_vasco
+	PASSWORD: SjWnMwDxFAaFRsPdG8zb
+	
+	USER: C##admin_rebeca
+	PASSWORD: b6HJ1lbarsCxfbVUY4Wn
+	
+	USER: C##admin_franscisca
+	PASSWORD: fPOt1DMjpUMrafiRlH40
