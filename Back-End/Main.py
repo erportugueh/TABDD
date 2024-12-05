@@ -1,7 +1,7 @@
 from Cart import Cart
 from User import UserManagementSystem
 from Database import Database
-
+import re
 
 def login(db):
     """
@@ -28,6 +28,7 @@ def main_menu(user_system, cart):
         print("1. Login")
         print("2. Register (Customer only)")
         print("3. Exit")
+        print("4. Show Available Logins")
         choice = input("Choose an option: ")
 
         if choice == "1":
@@ -37,19 +38,27 @@ def main_menu(user_system, cart):
         elif choice == "2":
             username = input("Enter your username: ")
             password = input("Enter your password: ")
-            user_system(password)
-
+            # Validate the password
+            validation_error = validate_password(password)
+            if validation_error:
+                print(f"Error: {validation_error}")
+                return
+            
             email = input("Enter your email: ")
             gdpr_terms = input("Do you accept the GDPR terms? (yes/no): ").lower() == "yes"
             if not gdpr_terms:
                 print("You must accept GDPR terms to register.")
                 return
-            
-            
+
             user_system.register_customer(username, password, email, gdpr_terms)
+
         elif choice == "3":
             print("Exiting program. Goodbye!")
+            
             break
+        elif choice == "4":
+            show_available_logins(db)
+            
         else:
             print("Invalid option. Please try again.")
 
@@ -98,6 +107,31 @@ def second_menu(user_system, cart, user_details):
 
 
 
+def show_available_logins(db):
+    """
+    Display available logins for customers and employees.
+    """
+    print("\n--- Available Logins ---")
+    
+    # Fetch customers
+    customers = db.get_available_logins("Customers")
+    if customers:
+        print("\n--- Customers ---")
+        for customer in customers:
+            print(f"Username: {customer['username']}, Password: {customer['password']}")
+    else:
+        print("\nNo customers found.")
+    
+    # Fetch employees
+    employees = db.get_available_logins("Employees")
+    if employees:
+        print("\n--- Employees ---")
+        for employee in employees:
+            print(f"Username: {employee['username']}, Password: {employee['password']}")
+    else:
+        
+        print("\nNo employees found.")
+
 def get_all_items():
         products = db.get_all_products()
         services = db.get_all_services()
@@ -142,6 +176,27 @@ def remove_items_from_cart():
         quantity = int(input("Enter quantity: "))
         cart.remove_from_cart(item_name, quantity)
 
+@staticmethod
+def validate_password(password):
+    """Validate the password against specified rules."""
+    if not (4 <= len(password) <= 16):
+        return "Password must be between 4 and 16 characters."
+    if not any(c.islower() for c in password):
+        return "Password must contain at least one lowercase letter."
+    if not any(c.isupper() for c in password):
+        return "Password must contain at least one uppercase letter."
+    if not any(c.isdigit() for c in password):
+        return "Password must contain at least one number."
+    if re.search(r"[-_.;]", password):
+        return "Password must not contain special characters (-_.;)."
+    return None
+
+def set_password(self, password):
+    """Validate and hash the password before assigning it to the user."""
+    validation_error = self.validate_password(password)
+    if validation_error:
+        raise ValueError(validation_error)
+    self.password = self.hash_password(password)
  
 # Main Program
 if __name__ == "__main__":

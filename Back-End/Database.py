@@ -44,7 +44,7 @@ class Database():
                 cursor.close()
             if 'connection' in locals():
                 connection.close()
-    def get_next_account_id():
+    def get_next_account_id(self):
         """
         Fetch the next value from the AccountID_Sequence in the database.
         :return: The next Account_ID as an integer.
@@ -192,7 +192,7 @@ class Database():
             if 'connection' in locals():
                 connection.close()
 
-                
+
     def get_item_price(self, item_name):
         """
         Fetch the price of an item by its name from the database.
@@ -217,6 +217,32 @@ class Database():
         except cx_Oracle.DatabaseError as e:
             print(f"Database error: {e}")
             return None
+        finally:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'connection' in locals():
+                connection.close()
+    def get_available_logins(self, table_name):
+        """
+        Retrieve available usernames and passwords from a specific table.
+        :param table_name: The name of the table ('Customers' or 'Employees').
+        :return: A list of dictionaries with 'username' and 'password'.
+        """
+        try:
+            connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+            cursor = connection.cursor()
+
+            query = f"SELECT Name, Password_Hash FROM {table_name}"
+            cursor.execute(query)
+
+            results = cursor.fetchall()
+            logins = [{"username": row[0], "password": row[1]} for row in results]
+
+            return logins
+
+        except cx_Oracle.DatabaseError as e:
+            print(f"Database error: {e}")
+            return []
         finally:
             if 'cursor' in locals():
                 cursor.close()

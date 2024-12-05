@@ -1,6 +1,5 @@
-import datetime
+from datetime import datetime
 import hashlib
-import re
 from Database import Database
 
 db=Database()
@@ -89,7 +88,9 @@ class UserManagementSystem:
     def register_customer(self, username, password, email, gdpr_terms):
       
 
-        accountID = len(self.users) + 1
+        accountID = len(self.users) + 1  # or use a better mechanism like fetching next ID from the DB
+        password_hash = self.hash_password(password)
+        current_dateTime = datetime.now()
         customer_data = {
             "name": username,
             "address": None,
@@ -97,9 +98,9 @@ class UserManagementSystem:
             "nif": None,
             "email": email,
             "account_id": db.get_next_account_id(),
-            "password_hash": password,
+            "password_hash": password_hash,
             "gdpr_terms": gdpr_terms,
-            "accepted_date": datetime.now(),
+            "accepted_date": current_dateTime,
             "points_balance": 0,
             "status": "new"
          }
@@ -111,27 +112,7 @@ class UserManagementSystem:
         """Hash the password using SHA256."""
         return hashlib.sha256(password.encode()).hexdigest()
 
-    @staticmethod
-    def validate_password(password):
-        """Validate the password against specified rules."""
-        if not (4 <= len(password) <= 16):
-            return "Password must be between 4 and 16 characters."
-        if not any(c.islower() for c in password):
-            return "Password must contain at least one lowercase letter."
-        if not any(c.isupper() for c in password):
-            return "Password must contain at least one uppercase letter."
-        if not any(c.isdigit() for c in password):
-            return "Password must contain at least one number."
-        if re.search(r"[-_.;]", password):
-            return "Password must not contain special characters (-_.;)."
-        return None
-
-    def set_password(self, password):
-        """Validate and hash the password before assigning it to the user."""
-        validation_error = self.validate_password(password)
-        if validation_error:
-            raise ValueError(validation_error)
-        self.password = self.hash_password(password)
+   
 
     def login(self):
         username = input("Enter your username: ")
