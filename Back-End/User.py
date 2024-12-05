@@ -1,0 +1,161 @@
+import datetime
+import hashlib
+import re
+from Database import Database
+
+db=Database()
+
+# Superclass: User
+class User:
+    def __init__(self, username, password, email, accountID):
+        self.username = username
+        self.password = password
+        self.email = email
+        self.accountID = accountID
+
+    def __str__(self):
+        return f"User({self.username}, Email: {self.email}, AccountID: {self.accountID})"
+
+
+# Subclass: Employee
+class Employee(User):
+    def __init__(self, username, password, email, accountID, employee_id, role):
+        super().__init__(username, password, email, accountID)
+        self.employee_id = employee_id
+        self.role = role
+
+    def __str__(self):
+        return f"Employee({self.username}, Role: {self.role}, Employee ID: {self.employee_id})"
+
+
+# Subclass: Customer
+class Customer(User):
+    def __init__(self, username, password, email, accountID, customer_id, address, postal_code, nif,
+                 gdpr_terms, accepted_date, points_balance, last_point_redeemed_date, status):
+        super().__init__(username, password, email, accountID)
+        self.customer_id = customer_id
+        self.address = address
+        self.postal_code = postal_code
+        self.nif = nif
+        self.gdpr_terms = gdpr_terms
+        self.accepted_date = accepted_date
+        self.points_balance = points_balance
+        self.last_point_redeemed_date = last_point_redeemed_date
+        self.status = status
+
+    def __str__(self):
+        return (f"Customer({self.username}, NIF: {self.nif}, Address: {self.address}, "
+                f"Postal Code: {self.postal_code}, Points Balance: {self.points_balance}, "
+                f"Status: {self.status})")
+    
+    
+    
+    
+    
+    
+    def __init__(self):
+        self.users = []  # List to store User objects
+
+  
+
+    def register_customer(self, username, password, email, accountID, customer_id, address, postal_code, nif,
+                          gdpr_terms, accepted_date, points_balance, last_point_redeemed_date, status):
+        customer = Customer(username, password, email, accountID, customer_id, address, postal_code, nif,
+                            gdpr_terms, accepted_date, points_balance, last_point_redeemed_date, status)
+        self.users.append(customer)
+        print(f"Customer '{username}' registered successfully.")
+
+    def login(self, username, password):
+        for user in self.users:
+            if user.username == username and user.password == password:
+                print(f"Login successful! Welcome, {username}.")
+                return user
+        print("Invalid username or password.")
+        return None
+
+    def display_users(self):
+        print("Registered Users:")
+        for user in self.users:
+            print(user)
+
+
+
+# User Management System
+class UserManagementSystem:
+    def __init__(self):
+        self.users = []
+        self.current_user = None
+
+    def register_customer(self, username, password, email, gdpr_terms):
+      
+
+        accountID = len(self.users) + 1
+        customer_data = {
+            "name": username,
+            "address": None,
+            "postal_code": None,
+            "nif": None,
+            "email": email,
+            "account_id": db.get_next_account_id(),
+            "password_hash": password,
+            "gdpr_terms": gdpr_terms,
+            "accepted_date": datetime.now(),
+            "points_balance": 0,
+            "status": "new"
+         }
+        db.save_customer_to_db(customer_data)
+        print(f"Customer '{username}' registered successfully.")
+
+    @staticmethod
+    def hash_password(password):
+        """Hash the password using SHA256."""
+        return hashlib.sha256(password.encode()).hexdigest()
+
+    @staticmethod
+    def validate_password(password):
+        """Validate the password against specified rules."""
+        if not (4 <= len(password) <= 16):
+            return "Password must be between 4 and 16 characters."
+        if not any(c.islower() for c in password):
+            return "Password must contain at least one lowercase letter."
+        if not any(c.isupper() for c in password):
+            return "Password must contain at least one uppercase letter."
+        if not any(c.isdigit() for c in password):
+            return "Password must contain at least one number."
+        if re.search(r"[-_.;]", password):
+            return "Password must not contain special characters (-_.;)."
+        return None
+
+    def set_password(self, password):
+        """Validate and hash the password before assigning it to the user."""
+        validation_error = self.validate_password(password)
+        if validation_error:
+            raise ValueError(validation_error)
+        self.password = self.hash_password(password)
+
+    def login(self):
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+        for user in self.users:
+            if user.username == username and user.password == password:
+                self.current_user = user
+                print(f"Login successful! Welcome, {username}.")
+                return True
+        print("Invalid username or password.")
+        return False
+
+    def logout(self):
+        self.current_user = None
+        print("Logged out successfully.")
+
+    def show_account_details(self):
+        if isinstance(self.current_user, Employee):
+            print(f"Username: {self.current_user.username}, Email: {self.current_user.email}, "
+                  f"Employee ID: {self.current_user.employee_id}")
+        elif isinstance(self.current_user, Customer):
+            print(f"Username: {self.current_user.username}, Email: {self.current_user.email}, "
+                  f"Status: {self.current_user.status}")
+
+    def display_users(self):
+        for user in self.users:
+            print(user)

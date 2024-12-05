@@ -1,0 +1,13 @@
+      usernameusername,
+            password=password,
+            email=email,
+            accountID=accountID,
+            customer_id=accountID,
+            address=None,
+            postal_code=None,
+            nif=None,
+            gdpr_terms=gdpr_terms,
+            accepted_date=datetime.date.today(),
+            points_balance=0,
+            last_point_redeemed_date=None,
+            status="new"
