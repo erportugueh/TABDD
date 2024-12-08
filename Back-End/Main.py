@@ -37,7 +37,7 @@ def main_menu(user_system, cart):
         elif choice == "8":
             cart.view_cart()
         elif choice == "9":
-            cart.calculate_checkout()
+           cart.calculate_checkout()
 
         elif choice == "3":
             print("Exiting program. Goodbye!")
@@ -86,7 +86,11 @@ def second_menu(user_system, cart, user_details):
             break
         elif choice == "8":
             print("Exiting program. Goodbye!")
-            exit()
+            total= cart.calculate_checkout()
+            if total > 0:
+                db.create_order(user_details, total)
+            else:
+                print("Cannot create order, Cart empy")
         else:
             print("Invalid option. Please try again.")
 

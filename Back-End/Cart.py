@@ -46,3 +46,4 @@ class Cart:
             else:
                 print(f"Error: Price not found for {item_name}.")
         print(f"\nTotal checkout amount: ${total:.2f}")
+        return total

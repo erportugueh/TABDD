@@ -1,7 +1,10 @@
 import cx_Oracle
 
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
+from pymongo import MongoClient
+
+
 
  # Database connection parameters
 host = "vsgate-s1.dei.isep.ipp.pt"
@@ -12,6 +15,13 @@ username = "C##e_commerce"  # Replace with your database username
 password = "qKCH1brdHfWtMFadWdbzWeMJS3rHDJ"  # Replace with your database password
 connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
 cursor = connection.cursor()
+
+# MongoDB Connection String
+connection_string = "mongodb://ecommerce_user:secure_password@vsgate-s1.dei.isep.ipp.pt:10911/EcommerceDB"
+client = MongoClient(connection_string)
+db = client["EcommerceDB"]
+ratings_collection = db["Ratings"]
+browsing_collection = db["BrowsingHistory"]
 
 
 class Database():
@@ -291,6 +301,37 @@ class Database():
                 cursor.close()
             if 'connection' in locals():
                 connection.close()
+
+
+
+def create_order(self, user_details, total):
+    try:
+        connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+        cursor = connection.cursor()
+
+        # Insert a new order into the Orders table
+        query = """
+        INSERT INTO Orders (Customer_ID, Delivery_Address, Status, Checkout_Total, Payment_Status, Shipping_Status)
+        VALUES (:customer_id, :delivery_address, 'accepted', :checkout_total, 'paypal', 'in transit')
+        """
+        cursor.execute(query, {
+            'customer_id': user_details['account_id'],
+            'delivery_address': user_details['address'],
+            'checkout_total': total
+        })
+
+        # Commit the transaction
+        connection.commit()
+        print("Order successfully created.")
+
+    except cx_Oracle.DatabaseError as e:
+        print(f"Database error: {e}")
+
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals():
+            connection.close()
     
 def get_all_suppliers_for_item(self, item_name):
     """
@@ -621,3 +662,98 @@ def get_orders_by_day_and_time(self, specific_date):
             cursor.close()
         if 'connection' in locals():
             connection.close()
+
+
+
+class Mongodb():
+    def create_rating(self, customer_name, item_name, rating, comment=None, attachments=None):
+        try:
+            # Connect to Oracle Database to get customer_id and item_id
+            connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+            cursor = connection.cursor()
+            
+            # Fetch customer_id based on customer_name
+            cursor.execute("SELECT Account_ID FROM Customers WHERE Name = :name", {"name": customer_name})
+            customer_result = cursor.fetchone()
+            if not customer_result:
+                print("Customer not found.")
+                return
+            
+            customer_id = customer_result[0]
+            
+            # Fetch item_id based on item_name
+            cursor.execute("SELECT Item_ID FROM Items WHERE Name = :name", {"name": item_name})
+            item_result = cursor.fetchone()
+            if not item_result:
+                print("Item not found.")
+                return
+            
+            item_id = item_result[0]
+            
+            # Prepare the rating document
+            rating_doc = {
+                "customer_id": customer_id,
+                "item_id": item_id,
+                "rating": rating,  # Initial rating set to 0
+                "comment": comment if comment else "",
+                "attachments": attachments if attachments else []
+            }
+            
+            # Insert the document into MongoDB
+            result = ratings_collection.insert_one(rating_doc)
+            print(f"Rating created successfully with ID: {result.inserted_id}")
+
+        except cx_Oracle.DatabaseError as e:
+            print(f"Oracle Database error: {e}")
+        
+        except Exception as e:
+            print(f"Error: {e}")
+        
+        finally:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'connection' in locals():
+                connection.close()
+    def record_browsing_history(self, customer_id, page_url):
+        """
+        Records browsing history for a customer.
+        
+        :param customer_id: The ID of the customer.
+        :param page_url: The URL of the visited page.
+        """
+        try:
+            # Get the current date and time in UTC using timezone-aware datetime
+            visit_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            visit_time = datetime.now(timezone.utc).strftime("%H:%M:%S")
+
+            # Create the browsing history document
+            history_doc = {
+                "customer_id": customer_id,
+                "page": page_url,
+                "visit_date": visit_date,
+                "visit_time": visit_time
+            }
+            
+            # Insert the document into MongoDB
+            result = browsing_collection.insert_one(history_doc)
+            print(f"Browsing history recorded successfully with ID: {result.inserted_id}")
+        
+        except Exception as e:
+            print(f"Error recording browsing history: {e}")
+    
+    def get_browsing_history(self, customer_id):
+        """
+        Retrieves browsing history for a specific customer.
+        
+        :param customer_id: The ID of the customer.
+        """
+        try:
+            # Query the browsing history for the customer
+            records = browsing_collection.find({"customer_id": customer_id})
+            
+            print(f"\n--- Browsing History for Customer ID: {customer_id} ---")
+            for record in records:
+                print(f"Page: {record['page']}, Date: {record['visit_date']}, Time: {record['visit_time']}")
+        
+        except Exception as e:
+            print(f"Error retrieving browsing history: {e}")
