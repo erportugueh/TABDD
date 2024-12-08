@@ -2,25 +2,8 @@ from Cart import Cart
 from User import UserManagementSystem
 from Database import Database
 import re
+import hashlib
 
-def login(db):
-    """
-    Handle the login process.
-    """
-    print("Login")
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
-
-    # Verify credentials with the database
-    user_details = db.verify_login(username, password)
-
-    if user_details:
-        print(f"Welcome {user_details['name']}!")
-        return user_details  # Return user details to determine access
-    else:
-        print("Invalid username or password. Please try again.")
-        return None
-    
 # Menus
 def main_menu(user_system, cart):
     while True:
@@ -29,6 +12,11 @@ def main_menu(user_system, cart):
         print("2. Register (Customer only)")
         print("3. Exit")
         print("4. Show Available Logins")
+        print("5. Item List")
+        print("6. Add to Cart")
+        print("7. Remove from Cart")
+        print("8. View Cart")
+        print("9. Calculate Checkout")
         choice = input("Choose an option: ")
 
         if choice == "1":
@@ -36,28 +24,25 @@ def main_menu(user_system, cart):
             if user_details:  # If login is successful
                 second_menu(user_system, cart, user_details)
         elif choice == "2":
-            username = input("Enter your username: ")
-            password = input("Enter your password: ")
-            # Validate the password
-            validation_error = validate_password(password)
-            if validation_error:
-                print(f"Error: {validation_error}")
-                return
-            
-            email = input("Enter your email: ")
-            gdpr_terms = input("Do you accept the GDPR terms? (yes/no): ").lower() == "yes"
-            if not gdpr_terms:
-                print("You must accept GDPR terms to register.")
-                return
+            register_Customer(user_system)
+        elif choice == "4":
+            show_available_logins(db)
+        elif choice == "5":
+            get_all_items()
+        elif choice == "6":
+            add_items_to_cart()
 
-            user_system.register_customer(username, password, email, gdpr_terms)
+        elif choice == "7":
+            remove_items_from_cart()
+        elif choice == "8":
+            cart.view_cart()
+        elif choice == "9":
+            cart.calculate_checkout()
 
         elif choice == "3":
             print("Exiting program. Goodbye!")
             
             break
-        elif choice == "4":
-            show_available_logins(db)
             
         else:
             print("Invalid option. Please try again.")
@@ -86,9 +71,9 @@ def second_menu(user_system, cart, user_details):
                 print("You are logged in as a Customer.")
 
         elif choice == "2":
-            get_all_items()
+            db.get_all_items()
         elif choice == "3":
-            add_items_to_cart()
+            get_all_items()
 
         elif choice == "4":
             remove_items_from_cart()
@@ -107,6 +92,29 @@ def second_menu(user_system, cart, user_details):
 
 
 
+def login(db):
+    """
+    Handle the login process.
+    """
+    print("Login")
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+
+    user_details = db.verify_login(username, password)
+
+    if user_details:
+        if user_details['type'] == 'customer':
+            print(f"Welcome, {user_details['name']}! You are logged in as a Customer.")
+            print(f"Email: {user_details['email']}")
+            print(f"Status: {user_details['status']}")
+        elif user_details['type'] == 'employee':
+            print(f"Welcome, {user_details['name']}! You are logged in as an Employee.")
+            print(f"Email: {user_details['email']}")
+            print(f"Role: {user_details['role']}")
+        return user_details  # Return user details to determine access
+    else:
+        print("Invalid username or password. Please try again.")
+        return None
 def show_available_logins(db):
     """
     Display available logins for customers and employees.
@@ -132,10 +140,30 @@ def show_available_logins(db):
         
         print("\nNo employees found.")
 
+#US1
+def register_Customer(user_system):
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            # Validate the password
+            validation_error = validate_password(password)
+            if validation_error:
+                print(f"Error: {validation_error}")
+                return
+            
+            email = input("Enter your email: ")
+            gdpr_terms = input("Do you accept the GDPR terms? (yes/no): ").lower() == "yes"
+            if not gdpr_terms:
+                print("You must accept GDPR terms to register.")
+                return
+
+            user_system.register_customer(username, password, email, gdpr_terms)
+
+       
+
 def get_all_items():
         products = db.get_all_products()
         services = db.get_all_services()
-
+        db.add_product(1, 1, 3, 4, 10, "abc", "dbc", 0)
         print("\n--- Item List ---")
         print("\nProducts:")
         if not products:
@@ -151,6 +179,21 @@ def get_all_items():
             for service in services:
                 print(f"{service['item_id']}: {service['name']} - ${service['sales_price']:.2f} - {service['item_type']}")
 
+#US2
+def get_item_by_name(item_name):
+    product = db.get_product_by_name(item_name)
+    if product:
+        print("\n--- Product Found ---")
+        print(f"{product['item_id']}: {product['name']} - ${product['sales_price']:.2f} - {product['item_type']}")
+        return
+
+    service = db.get_service_by_name(item_name)
+    if service:
+        print("\n--- Service Found ---")
+        print(f"{service['item_id']}: {service['name']} - ${service['sales_price']:.2f} - {service['item_type']}")
+        return
+
+    print(f"No product or service found with the name '{item_name}'.")
 
 def add_items_to_cart():
  # Fetch all items to validate the name
@@ -176,6 +219,18 @@ def remove_items_from_cart():
         quantity = int(input("Enter quantity: "))
         cart.remove_from_cart(item_name, quantity)
 
+#US6/7
+def print_suppliers_for_best(item_name):
+    suppliers= db.get_all_suppliers_for_item(item_name)
+    for suppliers in suppliers:
+        print(suppliers)
+
+#US9
+def get_products_min_stock():
+    products_stock=db.get_products_below_min_stock_with_suppliers()
+    for product in products_stock:
+        print(product)
+
 @staticmethod
 def validate_password(password):
     """Validate the password against specified rules."""
@@ -197,7 +252,30 @@ def set_password(self, password):
     if validation_error:
         raise ValueError(validation_error)
     self.password = self.hash_password(password)
- 
+
+#US10
+def get_aisles_high_disc():
+    aisles = db.get_aisles_for_high_discount_products()
+    if aisles:
+        print("\nAisles with products having high order counts and a discount greater than 20%:")
+        for aisle in aisles:
+            print(f"Zone_ID: {aisle['Zone_ID']}, Product: {aisle['Product_Name']}, Orders: {aisle['Order_Count']}, Capacity: {aisle['Capacity']}")
+    else:
+        print("No aisles found with the specified criteria.")
+
+
+
+#US11
+def get_orders_11():
+    specific_date = input("Enter the name of the product or service: ")
+
+    orders = db.get_orders_by_day_and_time(specific_date)
+    if orders:
+        print(f"\nOrders scheduled for delivery on {specific_date}:")
+        for order in orders:
+            print(f"Order ID: {order['Order_ID']}, Delivery Address: {order['Delivery_Address']}, Status: {order['Shipping_Status']}")
+    else:
+        print(f"No orders found for delivery on {specific_date}.")
 # Main Program
 if __name__ == "__main__":
     user_system = UserManagementSystem()
@@ -205,3 +283,7 @@ if __name__ == "__main__":
     db=Database()
 
     main_menu(user_system, cart)
+    # Example usage
+    item_name = input("Enter the name of the product or service: ")
+    get_item_by_name(item_name)
+

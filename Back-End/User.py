@@ -93,14 +93,14 @@ class UserManagementSystem:
         current_dateTime = datetime.now()
         customer_data = {
             "name": username,
-            "address": None,
-            "postal_code": None,
-            "nif": None,
+            "address": "abc",
+            "postal_code": "0000-000",
+            "nif": "124124",
             "email": email,
-            "account_id": db.get_next_account_id(),
+            "account_id": 1234,
             "password_hash": password_hash,
             "gdpr_terms": gdpr_terms,
-            "accepted_date": current_dateTime,
+            "accepted_date": "12-DEC-24",
             "points_balance": 0,
             "status": "new"
          }
