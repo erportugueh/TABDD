@@ -60,3 +60,7 @@ def cart(request):
 #Página user com account 
 def homeUser(request):
     return render(request, 'homepage/homeUser.html')
+
+#Página user com account 
+def checkout(request):
+    return render(request, 'homepage/checkout.html')

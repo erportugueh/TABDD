@@ -7,5 +7,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),  # Página de registro
     path('login/', views.login, name='login'),  # Página de login
     path('cart/', views.cart, name='cart'),  # Página do carrinho
+    path('checkout/', views.checkout, name='checkout')  # URL para a página de checkout
+
    
 ]
