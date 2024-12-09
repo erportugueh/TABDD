@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    /* Reset básico */
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #d5d3d2;
+      font-size: 16px;
+    }
+
+    /* Header superior */
+    .header-top {
+      background-color: #f8f9fa;
+      color: #000;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 18px;
+    }
+
+    .header-top a {
+      color: #393a3b;
+      text-decoration: none;
+      font-size: 18px;
+      margin-right: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .header-top a:hover {
+      color: #3e3f40;
+    }
+
+    .checkout-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+    }
+
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .order-summary, .payment-methods {
+      margin-bottom: 20px;
+    }
+
+    .order-summary h2, .payment-methods h2, .voucher h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .total, .original-price {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    .voucher {
+      margin-bottom: 20px;
+    }
+
+    .voucher input[type="text"] {
+      width: calc(100% - 110px);
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .voucher button {
+      padding: 8px 20px;
+      background-color: #5cbaf9;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .voucher button:hover {
+      background-color: #4aa0e6;
+    }
+
+    .payment-methods label {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .payment-methods img {
+      margin-right: 10px;
+      width: 30px;
+      height: 30px;
+    }
+
+    .confirm-button {
+      display: block;
+      width: 100%;
+      max-width: 300px; 
+      padding: 15px;
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      margin: 20px auto;
+    }
+
+    .confirm-button:hover {
+      background-color: #45a049;
+    }
+
+    .hidden {
+      display: none;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Header superior -->
+  <header class="header-top">
+    <div class="logo">
+      <a href="index.html">XPTOISEP</a>
+    </div>
+    <nav>
+      <a href="">Logout</a>
+      <a href="sobre.html">Sobre</a>
+    </nav>
+  </header>
+
+  <div class="checkout-container">
+    <header class="checkout-header">
+      <h1>Checkout</h1>
+    </header>
+
+    <!-- Resumo da encomenda -->
+    <section class="order-summary">
+      <h2>Resumo da Encomenda</h2>
+      <div class="order-item">
+        <span>D92 Straight Wide (Denim Azul-claro médio) - 1 unidade</span>
+        <span>27,99 €</span>
+      </div>
+      <div class="order-item">
+        <span>D92 Straight Wide (Denim Azul) - 1 unidade</span>
+        <span>27,99 €</span>
+      </div>
+      <div class="original-price">Preço original: 55,98 €</div>
+      <div class="total">Total: 55,98 €</div>
+    </section>
+
+    <!-- Secção de voucher -->
+    <section class="voucher">
+      <h2>Voucher de Desconto</h2>
+      <form>
+        <input type="text" placeholder="Insira o código do voucher" id="voucher-code">
+        <button type="button" onclick="applyVoucher()">Aplicar</button>
+      </form>
+    </section>
+
+  <!-- Métodos de pagamento -->
+<section class="payment-methods">
+  <h2>Método de Pagamento</h2>
+  <label>
+    <input type="radio" name="payment" value="mbway" onclick="togglePaymentFields()">
+    <img src="{% static 'images/mbwayLogo.png' %}" alt="MB WAY" width="50">
+    MB WAY
+  </label>
+  <label>
+    <input type="radio" name="payment" value="transferencia" onclick="togglePaymentFields()"> 
+    <img src="{% static 'images/creditCard.png' %}" alt="CreditCard" width="50">
+    Transferência Bancária
+  </label>
+</section>
+
+<!-- Campos MB WAY -->
+<div id="mbwayFields" class="hidden">
+  <label for="phone">Número de Telefone:</label>
+  <input type="text" id="phone" name="phone" placeholder="Ex: 912345678">
+</div>
+
+<!-- Campos Transferência Bancária -->
+<div id="transferFields" class="hidden">
+  <label for="iban">IBAN:</label>
+  <input type="text" id="iban" name="iban" placeholder="Ex: PT500000000000000000">
+  <label for="bank">Banco:</label>
+  <input type="text" id="bank" name="bank" placeholder="Ex: Banco XPTO">
+</div>
+
+
+    <!-- Botão de confirmação -->
+    <a href="confirmacao.html" class="confirm-button">Confirmar Compra</a>
+  </div>
+
+  <script>
+    function togglePaymentFields() {
+      // Obter elementos
+      const mbwayFields = document.getElementById('mbwayFields');
+      const transferFields = document.getElementById('transferFields');
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+  
+      // Mostrar/ocultar campos com base na seleção
+      if (paymentMethod === 'mbway') {
+        mbwayFields.classList.remove('hidden');
+        transferFields.classList.add('hidden');
+      } else if (paymentMethod === 'transferencia') {
+        transferFields.classList.remove('hidden');
+        mbwayFields.classList.add('hidden');
+      }
+    }
+  </script>
+  
+  </body>
+</html>
