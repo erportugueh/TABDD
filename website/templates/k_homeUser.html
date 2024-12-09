@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,29 +10,24 @@
         body {
             background-color: #f8f9fa;
         }
-
         .hero {
             padding: 50px 0;
             text-align: center;
             background-color: #343a40;
             color: white;
         }
-
         .features {
             padding: 30px;
         }
-
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         .product-card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             padding: 15px;
             background: white;
         }
-
         .footer {
             text-align: center;
             padding: 20px;
@@ -42,7 +36,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -54,10 +47,16 @@
             </form>
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a href="/login" class="nav-link" href="#">Login</a>
+                    <a href="{% url 'home' %}" class="nav-link" href="#">Logout</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/sign-up" class="btn btn-primary">Register</a>
+                    <a href="" class="nav-link" href="#">MyAccount</a>
+                </li>
+                <li class="nav-item">
+                    <a  href="{% url 'cart' %}" class="nav-link" href="#">
+                        Carrinho
+                        <span class="badge bg-success">0</span>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -159,5 +158,4 @@
         <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
     </div>
 </body>
-
 </html>
