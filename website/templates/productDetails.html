@@ -115,68 +115,92 @@
         .btn-info:hover {
             background-color: #138496;
         }
+
+        .btn-add-to-cart {
+            background-color: #28a745;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: #218838;
+        }
         
     </style>
 </head>
 <body>
     
     {% if current_user.is_authenticated %}
+    <!-- Header para usuários autenticados -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">XPTOISEP</a>
-            
-            <form class="d-flex me-auto" role="search" style="max-width: 400px;">
-                <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
-            </form>
+       <div class="container-fluid">
+           <a class="navbar-brand" href="#">XPTOISEP</a>
+           
+           <!-- Barra de pesquisa -->
+           <form class="d-flex me-auto" role="search" style="max-width: 400px;">
+               <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
+               <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+           </form>
 
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a href="/logout" class="nav-link">Logout</a>
-                </li> 
-            
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Minha Conta
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="">Informações da Conta</a></li>
-                        <li><a class="dropdown-item" href="">Pedidos Ativos</a></li>
-                        <li><a class="dropdown-item" href="">Meus Pedidos/Comentários</a></li>
-                    </ul>
-                </li>
+           <!-- Navegação para usuários autenticados -->
+           <ul class="navbar-nav mb-2 mb-lg-0">
+               <!-- Logout  -->
+                   <li class="nav-item">
+                   <ahref="" class="nav-link">Logout</a>
+               </li> 
+           
+               <!-- Conta de usuário -->
+               <!-- Conta de usuário com dropdown -->
+               <li class="nav-item dropdown">
+                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                       My Account
+                   </a>
+                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                       <li><a class="dropdown-item" href="/userDetails">Account Info</a></li>
+                       <li><a class="dropdown-item" href="/activeOrders">Active Orders</a></li>
+                       <li><a class="dropdown-item" href="/ordersReview">My Orders/Reviews</a></li>
+                   </ul>
+               </li>
 
-                <li class="nav-item">
-                    <a href="/cart" class="nav-link">
-                        Carrinho 
-                        <span class="badge bg-success">0</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    {% else %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">XPTOISEP</a>
+               <!-- Carrinho -->
+               <li class="nav-item">
+                   <a href="/cart" class="nav-link">
+                       Carrinho 
+                       <span class="badge bg-success">0</span>
+                   </a>
+               </li>
+           </ul>
+       </div>
+   </nav>
+   {% else %}
+   <!-- Header para usuários NÃO autenticados -->
+   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+       <div class="container-fluid">
+           <a class="navbar-brand" href="#">XPTOISEP</a>
 
-            <form class="d-flex me-auto" role="search" style="max-width: 400px;">
-                <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
-            </form>
+           <!-- Barra de pesquisa -->
+           <form class="d-flex me-auto" role="search" style="max-width: 400px;">
+               <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
+               <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+           </form>
 
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a href="/login" class="nav-link">Login</a>
-                </li>
+           <!-- Navegação para usuários NÃO autenticados -->
+           <ul class="navbar-nav mb-2 mb-lg-0">
+               <!-- Login -->
+               <li class="nav-item">
+                   <a href="/login" class="nav-link">Login</a> <!-- Certifique-se de que a rota de login existe -->
+               </li>
 
-                <li class="nav-item">
-                    <a href="/signup" class="btn btn-primary">Registrar</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    {% endif %}
+               <!-- Registro -->
+               <li class="nav-item">
+                   <a href="/sign-up" class="btn btn-primary">Register</a> <!-- Certifique-se de que a rota de signup existe -->
+               </li>
+           </ul>
+       </div>
+   </nav>
+   
+   {% endif %}
 
     <div class="container">
         <div class="product">
@@ -215,6 +239,18 @@
                         {% endfor %}
                     </select>
                 </div>
+                {% if current_user.is_authenticated %}
+                <button class="btn-add-to-cart" id="add-to-cart-btn">
+                    <a href="" style="color: white; text-decoration: none;">Adicionar ao Carrinho</a>
+                </button>
+                
+                {%else%}
+                <button class="btn-add-to-cart" id="add-to-cart-btn">
+                    <a href="/sign-up" style="color: white; text-decoration: none;">Adicionar ao Carrinho</a>
+                </button>
+                {%endif%}
+                
+
             </div>
         </div>
         
@@ -238,6 +274,18 @@
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        let cartCount = localStorage.getItem("cartCount") || 0;
+
+        document.getElementById("cart-count").innerText = cartCount;
+
+        document.getElementById("add-to-cart-btn").addEventListener("click", function() {
+            cartCount++;
+            localStorage.setItem("cartCount", cartCount);
+            document.getElementById("cart-count").innerText = cartCount;
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 

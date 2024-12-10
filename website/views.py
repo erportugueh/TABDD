@@ -51,3 +51,15 @@ def activeOrders():
 @views.route('/ordersReview')
 def ordersReview():
     return render_template('ordersReview.html')
+
+
+#user -  Warehouse Manager 
+@views.route('/warehouseManager')
+def warehouseManager():
+    return render_template('warehouseManager.html')
+
+
+#user -  Delivery Order Manager 
+@views.route('/deliveryOrderManager')
+def deliveryOrderManager():
+    return render_template('deliveryOrderManager.html')

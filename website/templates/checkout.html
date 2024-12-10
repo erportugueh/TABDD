@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     /* Reset básico */
     body {
@@ -149,21 +151,81 @@
       font-weight: bold;
       font-size: 20px;
     }
+
+    .quantity-buttons {
+      display: flex;
+      align-items: center;
+    }
+
+    .quantity-buttons button {
+      padding: 5px 15px;
+      font-size: 16px;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .quantity-buttons button:hover {
+      background-color: #ddd;
+    }
+
+    .quantity-buttons input {
+      width: 40px;
+      text-align: center;
+      margin: 0 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #343a40;
+      color: white;
+  }
   </style>
 </head>
 <body>
-  <!-- Header superior -->
-  <header class="header-top">
-    <div class="logo">
-      <a href="index.html">XPTOISEP</a>
-    </div>
-    <nav>
-      <a href="">Logout</a>
-      <a href="sobre.html">Sobre</a>
-    </nav>
-  </header>
 
-  <!--MUDAR O HEADER-->
+    <!-- Header para usuários autenticados -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="#">XPTOISEP</a>
+        
+          <!-- Navegação para usuários autenticados -->
+          <ul class="navbar-nav mb-2 mb-lg-0">
+              <!-- Logout  -->
+                  <li class="nav-item">
+                  <ahref="" class="nav-link">Logout</a>
+              </li> 
+          
+              <!-- Conta de usuário -->
+              <!-- Conta de usuário com dropdown -->
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      My Account
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="/userDetails">Account Info</a></li>
+                      <li><a class="dropdown-item" href="/activeOrders">Active Orders</a></li>
+                      <li><a class="dropdown-item" href="/ordersReview">My Orders/Reviews</a></li>
+                  </ul>
+              </li>
+
+              <!-- Carrinho -->
+              <li class="nav-item">
+                  <a href="/cart" class="nav-link">
+                      Carrinho 
+                      <span class="badge bg-success">0</span>
+                  </a>
+              </li>
+          </ul>
+      </div>
+  </nav>
+
+
 
   <div class="checkout-container">
     <header class="checkout-header">
@@ -174,11 +236,21 @@
     <section class="order-summary">
       <h2>Resumo da Encomenda</h2>
       <div class="order-item">
-        <span>D92 Straight Wide (Denim Azul-claro médio) - 1 unidade</span>
+        <span>D92 Straight Wide (Denim Azul-claro médio) - </span>
+        <span class="quantity-buttons">
+          <button onclick="updateQuantity('item1', -1)">-</button>
+          <input type="text" id="item1" value="1" readonly>
+          <button onclick="updateQuantity('item1', 1)">+</button>
+        </span>
         <span>27,99 €</span>
       </div>
       <div class="order-item">
-        <span>D92 Straight Wide (Denim Azul) - 1 unidade</span>
+        <span>D92 Straight Wide (Denim Azul) - </span>
+        <span class="quantity-buttons">
+          <button onclick="updateQuantity('item2', -1)">-</button>
+          <input type="text" id="item2" value="1" readonly>
+          <button onclick="updateQuantity('item2', 1)">+</button>
+        </span>
         <span>27,99 €</span>
       </div>
       <div class="original-price">Preço original: 55,98 €</div>
@@ -258,8 +330,7 @@
   <div class="footer">
     <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
     <p>Por: Elmer | Francisca | Rebeca | Vasco</p>
-</div>
-
+  </div>
 
   <script>
     function togglePaymentFields() {
@@ -291,7 +362,41 @@
       // Atualiza o total final
       document.getElementById("final-total-amount").innerText = totalAmount.toFixed(2) + " €";
     }
+
+    function updateQuantity(itemId, change) {
+      const item = document.getElementById(itemId);
+      let currentValue = parseInt(item.value);
+      currentValue += change;
+      
+      // Impede o valor de ser negativo
+      if (currentValue < 0) currentValue = 0;
+      
+      item.value = currentValue;
+
+      // Recalcular o preço total
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const item1Quantity = parseInt(document.getElementById("item1").value);
+      const item2Quantity = parseInt(document.getElementById("item2").value);
+      const item1Price = 27.99;
+      const item2Price = 27.99;
+      
+      const totalPrice = (item1Quantity * item1Price) + (item2Quantity * item2Price);
+      const shippingAmount = 5.00;
+      const taxAmount = totalPrice * 0.23;
+      const totalWithShippingIVA = totalPrice + shippingAmount + taxAmount;
+
+      document.getElementById("total-price").innerText = totalPrice.toFixed(2) + " €";
+      document.getElementById("shipping-amount").innerText = shippingAmount.toFixed(2) + " €";
+      document.getElementById("tax-amount").innerText = taxAmount.toFixed(2) + " €";
+      document.getElementById("total-with-shipping-iva").innerText = totalWithShippingIVA.toFixed(2) + " €";
+    }
+
+    updateTotal();
   </script>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

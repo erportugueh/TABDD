@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomendas Ativas</title>
+    <title>Gestão de Armazém</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +15,7 @@
             background-color: #f8f9fa;
         }
 
-        .orders-container {
+        .warehouse-container {
             max-width: 1100px;
             margin: 40px auto;
             background-color: #ffffff;
@@ -24,17 +24,17 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .orders-header {
+        .warehouse-header {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .orders-header h1 {
+        .warehouse-header h1 {
             font-size: 32px;
             color: #333;
         }
 
-        .order-card {
+        .warehouse-card {
             background-color: #e9f7fe;
             border-radius: 12px;
             padding: 20px;
@@ -42,24 +42,24 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .order-card h5 {
+        .warehouse-card h5 {
             font-size: 18px;
             color: #007bff;
             margin-bottom: 10px;
         }
 
-        .order-card p {
+        .warehouse-card p {
             font-size: 16px;
             color: #333;
         }
 
-        .order-items table {
+        .items-table table {
             width: 100%;
             margin-top: 15px;
             border-collapse: collapse;
         }
 
-        .order-items table, .order-items th, .order-items td {
+        .items-table table, .items-table th, .items-table td {
             border: 1px solid #ddd;
             padding: 8px;
         }
@@ -97,21 +97,6 @@
             color: #fff;
         }
 
-        .status-pending {
-            color: #ffc107;
-        }
-
-        .status-shipped {
-            color: #007bff;
-        }
-
-        .status-delivered {
-            color: #28a745;
-        }
-
-        .status-cancelled {
-            color: #dc3545;
-        }
         .footer {
             text-align: center;
             padding: 20px;
@@ -126,6 +111,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">XPTOISEP</a>
+    
             
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
@@ -133,122 +119,163 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        My Account
+                        Minha Conta
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="/userDetails">Account Info</a></li>
-                        <li><a class="dropdown-item" href="/activeOrders">Active Orders</a></li>
-                        <li><a class="dropdown-item" href="/ordersReview">My Orders/Reviews</a></li>
+                        <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="/cart" class="nav-link">
-                        Carrinho 
-                        <span class="badge bg-success">0</span>
-                    </a>
+                    <button>Warehouse Management</button>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Orders Section -->
-    <div class="orders-container">
+    <!-- Warehouse Management Section -->
+    <div class="warehouse-container">
         <div class="text-start">
             <a href="/" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left-circle me-2"></i> Voltar para a Home
             </a>
         </div>
 
-        <div class="orders-header">
-            <h1>Encomendas Ativas</h1>
+        <div class="warehouse-header">
+            <h1>Gestão de Armazém</h1>
         </div>
 
-        <!-- Lista de Encomendas Ativas -->
-        <div class="order-card">
-            <h5>Encomenda #12345</h5>
-            <p><strong>Data:</strong> 01/11/2024</p>
-            <p><strong>Endereço de entrega:</strong> Rua Exemplo, nº 123, Lisboa, Portugal</p>
-            <p><strong>Estado:</strong> <span class="status-pending">Pendente</span></p>
-            <p><strong>Status de pagamento:</strong> Pendente</p>
-            <p><strong>Valor total:</strong> 75,99€</p>
-            <p><strong>Desconto:</strong> 5,00€</p>
-            <p><strong>Taxas:</strong> 2,50€</p>
-            <p><strong>Total final:</strong> 73,49€</p>
-
-            <div class="order-items">
-                <h6><strong>Itens:</strong></h6>
+        <!-- Fornecedores dos Itens Mais Vendidos -->
+        <div class="warehouse-card">
+            <h5>Fornecedores dos Itens Mais Vendidos</h5>
+            <div class="items-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Nome do Item</th>
-                            <th>Quantidade</th>
-                            <th>Preço</th>
+                            <th>Produto</th>
+                            <th>Fornecedor</th>
+                            <th>Quantidade Vendida</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>Produto A</td>
-                            <td>2</td>
-                            <td>30,00€</td>
+                            <td>Fornecedor X</td>
+                            <td>150</td>
                         </tr>
                         <tr>
                             <td>Produto B</td>
-                            <td>1</td>
-                            <td>25,99€</td>
+                            <td>Fornecedor Y</td>
+                            <td>120</td>
                         </tr>
                         <tr>
                             <td>Produto C</td>
-                            <td>1</td>
-                            <td>20,00€</td>
+                            <td>Fornecedor Z</td>
+                            <td>100</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="order-card">
-            <h5>Encomenda #67890</h5>
-            <p><strong>Data:</strong> 28/10/2024</p>
-            <p><strong>Endereço de entrega:</strong> Avenida Exemplo, nº 456, Porto, Portugal</p>
-            <p><strong>Estado:</strong> <span class="status-shipped">Enviada</span></p>
-            <p><strong>Status de pagamento:</strong> Pago</p>
-            <p><strong>Valor total:</strong> 35,50€</p>
-            <p><strong>Desconto:</strong> 3,00€</p>
-            <p><strong>Taxas:</strong> 1,50€</p>
-            <p><strong>Total final:</strong> 33,00€</p>
-
-            <div class="order-items">
-                <h6><strong>Itens:</strong></h6>
+        <!-- Itens Mais Votados -->
+        <div class="warehouse-card">
+            <h5>Itens Mais Votados e seus Fornecedores</h5>
+            <div class="items-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Nome do Item</th>
-                            <th>Quantidade</th>
-                            <th>Preço</th>
+                            <th>Produto</th>
+                            <th>Fornecedor</th>
+                            <th>Classificação</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>Produto D</td>
-                            <td>1</td>
-                            <td>15,00€</td>
+                            <td>Fornecedor A</td>
+                            <td>4.9</td>
                         </tr>
                         <tr>
                             <td>Produto E</td>
-                            <td>1</td>
-                            <td>20,50€</td>
+                            <td>Fornecedor B</td>
+                            <td>4.8</td>
+                        </tr>
+                        <tr>
+                            <td>Produto F</td>
+                            <td>Fornecedor C</td>
+                            <td>4.7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Produtos com Stock Baixo -->
+        <div class="warehouse-card">
+            <h5>Produtos com Stock Baixo</h5>
+            <div class="items-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Fornecedor</th>
+                            <th>Stock Atual</th>
+                            <th>Stock Mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Produto G</td>
+                            <td>Fornecedor X</td>
+                            <td>5</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>Produto H</td>
+                            <td>Fornecedor Y</td>
+                            <td>3</td>
+                            <td>8</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Corredores com Itens com Desconto Maior que 20% -->
+        <div class="warehouse-card">
+            <h5>Corredores com Itens com Desconto Maior que 20%</h5>
+            <div class="items-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Corredor</th>
+                            <th>Desconto (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Produto I</td>
+                            <td>Corredor 1</td>
+                            <td>25%</td>
+                        </tr>
+                        <tr>
+                            <td>Produto J</td>
+                            <td>Corredor 3</td>
+                            <td>30%</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
     <!-- Footer -->
     <div class="footer">
-        <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
+        <p>© 2024 Warehouse Management. Instituto Superior de Engenharia do Porto.</p>
         <p>Por: Elmer | Francisca | Rebeca | Vasco</p>
     </div>
-
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
