@@ -130,16 +130,17 @@ class SupplierItem(db.Model):
                 f"item_id={self.item_id}, price={self.price}, availability={self.availability})>")
 
 class Voucher(db.Model):
-    __tablename__ = 'Vouchers'  # Oracle table name
+    __tablename__ = 'VOUCHERS'  # Matches the Oracle table name
 
     voucher_id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # VOUCHER_ID
     customer_id = db.Column(db.Integer, nullable=False)  # CUSTOMER_ID
+    voucher_code = db.Column(db.String(50), nullable=False, unique=True)  # VOUCHER_CODE
     amount = db.Column(db.Float, nullable=False)  # AMOUNT
     valid_until = db.Column(db.Date, nullable=False)  # VALID_UNTIL
 
     def __repr__(self):
         return (f"<Voucher(voucher_id={self.voucher_id}, customer_id={self.customer_id}, "
-                f"amount={self.amount}, valid_until={self.valid_until})>")
+                f"voucher_code='{self.voucher_code}', amount={self.amount}, valid_until={self.valid_until})>")
 
 class Warehouse(db.Model):
     __tablename__ = 'Warehouses'  # Oracle table name
@@ -258,78 +259,14 @@ class BrowsingHistory(Document):
         return (f"<BrowsingHistory(customer_id={self.customer_id}, page={self.page}, "
                 f"visit_date_time={self.visit_date_time})>")
 
-#Cart model
-class Cart:
-    import random
+class CartItem(EmbeddedDocument):
+    item_id = fields.IntField(required=True)
+    item_name = fields.StringField(required=True)
+    price = fields.FloatField(required=True, min_value=0)
+    discount = fields.FloatField(required=True, min_value=0, max_value=1)
+    quantity = fields.IntField(required=True, min_value=1)
 
-    class Cart:
-        def __init__(self):
-            # Initialize the cart
-            self.items = []  # List to store cart items
-            self.total_price = 0  # Total price without discount
-            self.total_price_with_discount = 0  # Total price after discounts
-            self.total_price_with_taxes = 0  # Total price with taxes
-            self.shipping_cost = 0  # Total shipping cost
-
-        def add_to_cart(self, item_id, price, quantity, discount=0):
-            # Check if the item already exists in the cart
-            for item in self.items:
-                if item["item_id"] == item_id:
-                    item["quantity"] += quantity
-                    print(f"Updated {quantity} x Item {item_id} in the cart.")
-                    self.update_totals()
-                    return
-
-            # Add a new item to the cart
-            self.items.append({
-                "item_id": item_id,
-                "price": price,
-                "quantity": quantity,
-                "discount": discount
-            })
-            print(f"Added {quantity} x Item {item_id} to the cart.")
-            self.update_totals()
-
-        def remove_from_cart(self, item_id, quantity=None):
-            # Find the item in the cart
-            for item in self.items:
-                if item["item_id"] == item_id:
-                    if quantity is None or item["quantity"] <= quantity:
-                        self.items.remove(item)
-                        print(f"Removed Item {item_id} from the cart.")
-                    else:
-                        item["quantity"] -= quantity
-                        print(f"Removed {quantity} x Item {item_id} from the cart.")
-                    self.update_totals()
-                    return
-
-            print(f"Item {item_id} not found in the cart.")
-
-        def calculate_shipping_cost(self):
-            # Calculate shipping cost based on quantity and a random value (1-10)
-            self.shipping_cost = sum(
-                item["quantity"] * random.randint(1, 10) for item in self.items
-            )
-
-        def update_totals(self):
-            # Update all totals
-            self.total_price = sum(item["price"] * item["quantity"] for item in self.items)
-            self.total_price_with_discount = sum(
-                (item["price"] - item["price"] * item["discount"]) * item["quantity"]
-                for item in self.items
-            )
-            self.total_price_with_taxes = self.total_price_with_discount * 1.23
-            self.calculate_shipping_cost()
-
-        def view_cart(self):
-            # Display the cart contents
-            print("\n--- Cart Items ---")
-            for item in self.items:
-                print(f"Item ID: {item['item_id']}, Quantity: {item['quantity']}, "
-                      f"Price: ${item['price']:.2f}, Discount: {item['discount'] * 100:.0f}%")
-            print("------------------")
-            print(f"Total Price: ${self.total_price:.2f}")
-            print(f"Total Price with Discount: ${self.total_price_with_discount:.2f}")
-            print(f"Total Price with Taxes: ${self.total_price_with_taxes:.2f}")
-            print(f"Shipping Cost: ${self.shipping_cost:.2f}")
-            print("------------------")
+class Cart(Document):
+    meta = {'collection': 'Carts'}
+    customer_id = fields.IntField(required=True, unique=True, db_field="Customer_ID")
+    items = fields.EmbeddedDocumentListField(CartItem, db_field="Items")

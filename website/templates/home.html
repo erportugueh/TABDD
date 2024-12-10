@@ -58,6 +58,7 @@
 
             <!-- Navegação para usuários autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
+<<<<<<< Updated upstream
                 <li class="nav-item">
                     <a href="/logout" class="nav-link">Logout</a>
                 </li>
@@ -82,11 +83,49 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">XPTOISEP</a>
 
+=======
+                <!-- Logout  -->
+                <li class="nav-item">
+                    <ahref="" class="nav-link">Logout</a>
+                </li>
+
+                <!-- Conta de usuário -->
+                <!-- Conta de usuário com dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        My Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="">Account Info</a></li>
+                        <li><a class="dropdown-item" href="">Active Orders</a></li>
+                        <li><a class="dropdown-item" href="">My Orders/Reviews</a></li>
+                    </ul>
+                </li>
+
+                <!-- Carrinho -->
+                <li class="nav-item">
+                    <a href="/cart/view" class="nav-link">
+                        Carrinho
+                        <span class="badge bg-success">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% else %}
+    <!-- Header para usuários NÃO autenticados -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">XPTOISEP</a>
+
+>>>>>>> Stashed changes
             <!-- Barra de pesquisa -->
             <form class="d-flex me-auto" role="search" style="max-width: 400px;">
                 <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </form>
+<<<<<<< Updated upstream
 
             <!-- Navegação para usuários NÃO autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
@@ -105,6 +144,27 @@
     </nav>
 
     {% endif %}
+=======
+
+            <!-- Navegação para usuários NÃO autenticados -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- Login -->
+                <li class="nav-item">
+                    <a href="/login" class="nav-link">Login</a> <!-- Certifique-se de que a rota de login existe -->
+                </li>
+
+                <!-- Registro -->
+                <li class="nav-item">
+                    <a href="/signup" class="btn btn-primary">Register</a>
+                    <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    {% endif %}
+
+>>>>>>> Stashed changes
 
     <!-- Hero Section -->
     <div class="hero">

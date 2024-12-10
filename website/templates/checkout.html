@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,11 +54,24 @@
       margin-bottom: 20px;
     }
 
+<<<<<<< Updated upstream
     .order-summary, .payment-methods {
       margin-bottom: 20px;
     }
 
     .order-summary h2, .payment-methods h2, .voucher h2 {
+=======
+    .order-summary,
+    .payment-methods,
+    .cart-details {
+      margin-bottom: 20px;
+    }
+
+    .order-summary h2,
+    .payment-methods h2,
+    .voucher h2,
+    .cart-details h2 {
+>>>>>>> Stashed changes
       font-size: 24px;
       margin-bottom: 10px;
     }
@@ -69,7 +83,8 @@
       border-bottom: 1px solid #ddd;
     }
 
-    .total, .original-price {
+    .total,
+    .original-price {
       font-weight: bold;
       font-size: 18px;
       margin-top: 10px;
@@ -117,7 +132,7 @@
     .confirm-button {
       display: block;
       width: 100%;
-      max-width: 300px; 
+      max-width: 300px;
       padding: 15px;
       background-color: #4CAF50;
       color: white;
@@ -140,6 +155,7 @@
     
   </style>
 </head>
+
 <body>
   <!-- Header superior -->
   <header class="header-top">
@@ -160,27 +176,61 @@
     <!-- Resumo da encomenda -->
     <section class="order-summary">
       <h2>Resumo da Encomenda</h2>
+      {% if cart and cart.items %}
+      {% for item in cart.items %}
       <div class="order-item">
-        <span>D92 Straight Wide (Denim Azul-claro médio) - 1 unidade</span>
-        <span>27,99 €</span>
+        <span>{{ item.item_name }} - {{ item.quantity }} unidade(s)</span>
+        <span>{{ (item.price - item.price * item.discount) | round(2) }} € (Discount applied:{{ item.discount * 100}}%
+          )</span>
       </div>
+<<<<<<< Updated upstream
       <div class="order-item">
         <span>D92 Straight Wide (Denim Azul) - 1 unidade</span>
         <span>27,99 €</span>
       </div>
       <div class="original-price">Preço original: 55,98 €</div>
       <div class="total">Total: 55,98 €</div>
+=======
+      {% endfor %}
+      {% else %}
+      <p>O seu carrinho está vazio.</p>
+      {% endif %}
+    </section>
+
+    <!-- Carrinho de Compras -->
+    <section class="cart-details">
+      <h2>Detalhes do Carrinho</h2>
+      {% if cart %}
+      <div>
+        <span>Preço Total das Peças:</span>
+        <span id="total-price">{{ results.totals.total_price | round(2) }} €</span>
+      </div>
+      <div>
+        <span>Valor do Shipping:</span>
+        <span id="shipping-amount">{{ results.totals.shipping_cost | round(2) }} €</span>
+      </div>
+      <div>
+        <span>IVA (23%):</span>
+        <span id="tax-amount">{{ results.totals.taxes | round(2) }} €</span>
+      </div>
+      <div>
+        <span>Preço com IVA e Shipping:</span>
+        <span id="total-with-shipping-iva">{{ results.totals.final_total | round(2) }} €</span>
+      </div>
+      {% endif %}
+>>>>>>> Stashed changes
     </section>
 
     <!-- Secção de voucher -->
     <section class="voucher">
       <h2>Voucher de Desconto</h2>
-      <form>
-        <input type="text" placeholder="Insira o código do voucher" id="voucher-code">
-        <button type="button" onclick="applyVoucher()">Aplicar</button>
+      <form id="voucher-form" method="POST" action="/cart/view">
+        <input type="text" name="voucher_code" placeholder="Insira o código do voucher" id="voucher-code" required>
+        <button type="submit">Aplicar</button>
       </form>
     </section>
 
+<<<<<<< Updated upstream
   <!-- Métodos de pagamento -->
 <section class="payment-methods">
   <h2>Método de Pagamento</h2>
@@ -201,6 +251,38 @@
   <label for="phone">Número de Telefone:</label>
   <input type="text" id="phone" name="phone" placeholder="Ex: 912345678">
 </div>
+=======
+    <!-- Código Voucher -->
+    <section class="cart-details">
+      <div>
+        <span>Código Voucher:</span>
+        <span id="voucher_code">{{ results.totals.voucher_code }}</span>
+      </div>
+    </section>
+
+    <!-- Total com desconto -->
+    <section class="cart-details">
+      <div>
+        <span>Total com Desconto:</span>
+        <span id="final-total-amount">{{ results.totals.final_total_discounted | round(2) }} €</span>
+      </div>
+    </section>
+
+    <!-- Métodos de pagamento -->
+    <section class="payment-methods">
+      <h2>Método de Pagamento</h2>
+      <label>
+        <input type="radio" name="payment" value="mbway" onclick="togglePaymentFields()">
+        <img src="" alt="MB WAY" width="50">
+        MB WAY
+      </label>
+      <label>
+        <input type="radio" name="payment" value="transferencia" onclick="togglePaymentFields()">
+        <img src="" alt="CreditCard" width="50">
+        Transferência Bancária
+      </label>
+    </section>
+>>>>>>> Stashed changes
 
 <!-- Campos Transferência Bancária -->
 <div id="transferFields" class="hidden">
@@ -221,7 +303,7 @@
       const mbwayFields = document.getElementById('mbwayFields');
       const transferFields = document.getElementById('transferFields');
       const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-  
+
       // Mostrar/ocultar campos com base na seleção
       if (paymentMethod === 'mbway') {
         mbwayFields.classList.remove('hidden');
@@ -232,6 +314,26 @@
       }
     }
   </script>
+<<<<<<< Updated upstream
   
   </body>
 </html>
+=======
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="container mt-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</body>
+
+</html>
+>>>>>>> Stashed changes
