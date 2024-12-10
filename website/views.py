@@ -19,10 +19,11 @@ def product_details():
 
     # Comentários fictícios
     comments = [
-        {'user': 'João', 'text': 'Muito bom, recomendo!'},
-        {'user': 'Maria', 'text': 'Ótimo produto! Vale a pena!'},
-        {'user': 'Carlos', 'text': 'Gostei bastante, mas poderia ser mais barato.'}
-    ]
+    {'user': 'João', 'text': 'Muito bom, recomendo!', 'rating': 4},
+    {'user': 'Maria', 'text': 'Ótimo produto! Vale a pena!', 'rating': 5},
+    {'user': 'Carlos', 'text': 'Gostei bastante, mas poderia ser mais barato.', 'rating': 3}
+]
+
     
     # Renderizando o template com as informações
     return render_template('productDetails.html', product=product, comments=comments)
@@ -34,3 +35,19 @@ def checkout():
 @views.route('/cart')
 def cart():
     return render_template('cart.html')
+
+
+@views.route('/userDetails')
+def userDetails():
+    return render_template('userDetails.html')
+
+# user - costumer 
+# ACTIVE ORDERS 
+@views.route('/activeOrders')
+def activeOrders():
+    return render_template('activeOrders.html')
+
+# ORDERS & REVIEWS 
+@views.route('/ordersReview')
+def ordersReview():
+    return render_template('ordersReview.html')

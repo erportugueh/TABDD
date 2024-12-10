@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Produto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -38,22 +37,49 @@
 
         .product-details {
             max-width: 600px;
+            margin-left: 20px;
         }
 
         .product-details h1 {
             margin: 0;
             color: #333;
+            font-size: 2rem;
         }
 
         .product-details p {
             color: #666;
             line-height: 1.5;
+            margin-bottom: 10px;
         }
 
         .product-price {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #e74c3c;
             margin-top: 10px;
+            font-weight: bold
+        }
+
+        .product-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .product-info p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .dropdown-menu {
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .comments {
@@ -73,8 +99,21 @@
             font-weight: bold;
         }
 
+        .rating {
+            color: #ffc107;
+        }
+
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
         }
         
     </style>
@@ -82,40 +121,33 @@
 <body>
     
     {% if current_user.is_authenticated %}
-     <!-- Header para usuários autenticados -->
-     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">XPTOISEP</a>
             
-            <!-- Barra de pesquisa -->
             <form class="d-flex me-auto" role="search" style="max-width: 400px;">
                 <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </form>
 
-            <!-- Navegação para usuários autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
-                <!-- Logout  -->
-                    <li class="nav-item">
-                    <ahref="" class="nav-link">Logout</a>
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link">Logout</a>
                 </li> 
             
-                <!-- Conta de usuário -->
-                <!-- Conta de usuário com dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        My Account
+                        Minha Conta
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="">Account Info</a></li>
-                        <li><a class="dropdown-item" href="">Active Orders</a></li>
-                        <li><a class="dropdown-item" href="">My Orders/Reviews</a></li>
+                        <li><a class="dropdown-item" href="">Informações da Conta</a></li>
+                        <li><a class="dropdown-item" href="">Pedidos Ativos</a></li>
+                        <li><a class="dropdown-item" href="">Meus Pedidos/Comentários</a></li>
                     </ul>
                 </li>
 
-                <!-- Carrinho -->
                 <li class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="/cart" class="nav-link">
                         Carrinho 
                         <span class="badge bg-success">0</span>
                     </a>
@@ -124,58 +156,89 @@
         </div>
     </nav>
     {% else %}
-    <!-- Header para usuários NÃO autenticados -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">XPTOISEP</a>
 
-            <!-- Barra de pesquisa -->
             <form class="d-flex me-auto" role="search" style="max-width: 400px;">
                 <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </form>
 
-            <!-- Navegação para usuários NÃO autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
-                <!-- Login -->
                 <li class="nav-item">
-                    <a href="/login" class="nav-link">Login</a> <!-- Certifique-se de que a rota de login existe -->
+                    <a href="/login" class="nav-link">Login</a>
                 </li>
 
-                <!-- Registro -->
                 <li class="nav-item">
-                    <a href="/signup" class="btn btn-primary">Register</a> <!-- Certifique-se de que a rota de signup existe -->
+                    <a href="/signup" class="btn btn-primary">Registrar</a>
                 </li>
             </ul>
         </div>
     </nav>
-    
     {% endif %}
-    
-    
 
     <div class="container">
         <div class="product">
-            <!-- Imagem do produto -->
             <img src="{{ product.image_url }}" alt="{{ product.name }}">
             <div class="product-details">
                 <h1>{{ product.name }}</h1>
                 <p><strong>Descrição:</strong> {{ product.description }}</p>
                 <p><strong>Cor:</strong> {{ product.color }}</p>
                 <p class="product-price">Preço: {{ product.price }}</p>
+                <br>
+                <h4>Detalhes do Produto</h4>
+                <div class="product-info">  
+                    <p><strong>Categoria:</strong> {{ product.category }}</p>
+                    <p><strong>Subcategoria:</strong> {{ product.subcategory }}</p>
+                    <p><strong>Desconto:</strong> {{ product.discount }}%</p>
+                    
+                    <h5>Informações Técnicas</h5>
+                    <ul>
+                        {% for tech in product.technical_info %}
+                            <li>{{ tech }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h5>Informações Físicas</h5>
+                    <ul>
+                        {% for phys in product.physical_info %}
+                            <li>{{ phys }}</li>
+                        {% endfor %}
+                    </ul>                   
+                </div>
+                <div class="form-group">
+                    <label for="size">Selecione o Tamanho</label>
+                    <select class="form-select" id="size" aria-label="Tamanho do Produto">
+                        {% for size in product.sizes %}
+                            <option value="{{ size }}">{{ size }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         </div>
-
+        
         <div class="comments">
             <h3>Comentários</h3>
-            <!-- Exibindo os comentários -->
             {% for comment in comments %}
                 <div class="comment">
                     <p><span class="user">{{ comment.user }}</span>: {{ comment.text }}</p>
+
+                    <!-- Exibição da avaliação de 0 a 5 -->
+                    <div class="rating">
+                        {% for i in range(0, 5) %}
+                            {% if i < comment.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
             {% endfor %}
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
