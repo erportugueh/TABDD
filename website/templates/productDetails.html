@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+     <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .product img {
+            max-width: 300px;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            max-width: 600px;
+        }
+
+        .product-details h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .product-details p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+
+        .comments {
+            margin-top: 30px;
+        }
+
+        .comment {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .comment p {
+            margin: 0;
+        }
+
+        .comment .user {
+            font-weight: bold;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+    </style>
+</head>
+<body>
+    
+    {% if current_user.is_authenticated %}
+     <!-- Header para usuários autenticados -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">XPTOISEP</a>
+            
+            <!-- Barra de pesquisa -->
+            <form class="d-flex me-auto" role="search" style="max-width: 400px;">
+                <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+            </form>
+
+            <!-- Navegação para usuários autenticados -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- Logout  -->
+                    <li class="nav-item">
+                    <ahref="" class="nav-link">Logout</a>
+                </li> 
+            
+                <!-- Conta de usuário -->
+                <!-- Conta de usuário com dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        My Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="">Account Info</a></li>
+                        <li><a class="dropdown-item" href="">Active Orders</a></li>
+                        <li><a class="dropdown-item" href="">My Orders/Reviews</a></li>
+                    </ul>
+                </li>
+
+                <!-- Carrinho -->
+                <li class="nav-item">
+                    <a href="" class="nav-link">
+                        Carrinho 
+                        <span class="badge bg-success">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% else %}
+    <!-- Header para usuários NÃO autenticados -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">XPTOISEP</a>
+
+            <!-- Barra de pesquisa -->
+            <form class="d-flex me-auto" role="search" style="max-width: 400px;">
+                <input class="form-control me-2" type="search" placeholder="Pesquisar produtos..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+            </form>
+
+            <!-- Navegação para usuários NÃO autenticados -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- Login -->
+                <li class="nav-item">
+                    <a href="/login" class="nav-link">Login</a> <!-- Certifique-se de que a rota de login existe -->
+                </li>
+
+                <!-- Registro -->
+                <li class="nav-item">
+                    <a href="/signup" class="btn btn-primary">Register</a> <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    {% endif %}
+    
+    
+
+    <div class="container">
+        <div class="product">
+            <!-- Imagem do produto -->
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            <div class="product-details">
+                <h1>{{ product.name }}</h1>
+                <p><strong>Descrição:</strong> {{ product.description }}</p>
+                <p><strong>Cor:</strong> {{ product.color }}</p>
+                <p class="product-price">Preço: {{ product.price }}</p>
+            </div>
+        </div>
+
+        <div class="comments">
+            <h3>Comentários</h3>
+            <!-- Exibindo os comentários -->
+            {% for comment in comments %}
+                <div class="comment">
+                    <p><span class="user">{{ comment.user }}</span>: {{ comment.text }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

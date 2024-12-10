@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -53,11 +52,11 @@
       margin-bottom: 20px;
     }
 
-    .order-summary, .payment-methods {
+    .order-summary, .payment-methods, .cart-details {
       margin-bottom: 20px;
     }
 
-    .order-summary h2, .payment-methods h2, .voucher h2 {
+    .order-summary h2, .payment-methods h2, .voucher h2, .cart-details h2 {
       font-size: 24px;
       margin-bottom: 10px;
     }
@@ -137,7 +136,19 @@
     .hidden {
       display: none;
     }
-    
+
+    /* Cart details */
+    .cart-details div {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 18px;
+    }
+
+    .cart-details .total-amount {
+      font-weight: bold;
+      font-size: 20px;
+    }
   </style>
 </head>
 <body>
@@ -151,6 +162,8 @@
       <a href="sobre.html">Sobre</a>
     </nav>
   </header>
+
+  <!--MUDAR O HEADER-->
 
   <div class="checkout-container">
     <header class="checkout-header">
@@ -169,7 +182,27 @@
         <span>27,99 €</span>
       </div>
       <div class="original-price">Preço original: 55,98 €</div>
-      <div class="total">Total: 55,98 €</div>
+    </section>
+
+    <!-- Carrinho de Compras -->
+    <section class="cart-details">
+      <h2>Detalhes do Carrinho</h2>
+      <div>
+        <span>Preço Total das Peças:</span>
+        <span id="total-price">55,98 €</span>
+      </div>
+      <div>
+        <span>Valor do Shipping:</span>
+        <span id="shipping-amount">5,00 €</span>
+      </div>
+      <div>
+        <span>IVA (23%):</span>
+        <span id="tax-amount">12,86 €</span>
+      </div>
+      <div>
+        <span>Preço com IVA e Shipping:</span>
+        <span id="total-with-shipping-iva">73,84 €</span>
+      </div>
     </section>
 
     <!-- Secção de voucher -->
@@ -181,35 +214,42 @@
       </form>
     </section>
 
-  <!-- Métodos de pagamento -->
-<section class="payment-methods">
-  <h2>Método de Pagamento</h2>
-  <label>
-    <input type="radio" name="payment" value="mbway" onclick="togglePaymentFields()">
-    <img src="{% static 'images/mbwayLogo.png' %}" alt="MB WAY" width="50">
-    MB WAY
-  </label>
-  <label>
-    <input type="radio" name="payment" value="transferencia" onclick="togglePaymentFields()"> 
-    <img src="{% static 'images/creditCard.png' %}" alt="CreditCard" width="50">
-    Transferência Bancária
-  </label>
-</section>
+    <!-- Total com desconto -->
+    <section class="cart-details">
+      <div>
+        <span>Total com Desconto:</span>
+        <span id="final-total-amount">73,84 €</span>
+      </div>
+    </section>
 
-<!-- Campos MB WAY -->
-<div id="mbwayFields" class="hidden">
-  <label for="phone">Número de Telefone:</label>
-  <input type="text" id="phone" name="phone" placeholder="Ex: 912345678">
-</div>
+    <!-- Métodos de pagamento -->
+    <section class="payment-methods">
+      <h2>Método de Pagamento</h2>
+      <label>
+        <input type="radio" name="payment" value="mbway" onclick="togglePaymentFields()">
+        <img src="" alt="MB WAY" width="50">
+        MB WAY
+      </label>
+      <label>
+        <input type="radio" name="payment" value="transferencia" onclick="togglePaymentFields()"> 
+        <img src="" alt="CreditCard" width="50">
+        Transferência Bancária
+      </label>
+    </section>
 
-<!-- Campos Transferência Bancária -->
-<div id="transferFields" class="hidden">
-  <label for="iban">IBAN:</label>
-  <input type="text" id="iban" name="iban" placeholder="Ex: PT500000000000000000">
-  <label for="bank">Banco:</label>
-  <input type="text" id="bank" name="bank" placeholder="Ex: Banco XPTO">
-</div>
+    <!-- Campos MB WAY -->
+    <div id="mbwayFields" class="hidden">
+      <label for="phone">Número de Telefone:</label>
+      <input type="text" id="phone" name="phone" placeholder="Ex: 912345678">
+    </div>
 
+    <!-- Campos Transferência Bancária -->
+    <div id="transferFields" class="hidden">
+      <label for="iban">IBAN:</label>
+      <input type="text" id="iban" name="iban" placeholder="Ex: PT500000000000000000">
+      <label for="bank">Banco:</label>
+      <input type="text" id="bank" name="bank" placeholder="Ex: Banco XPTO">
+    </div>
 
     <!-- Botão de confirmação -->
     <a href="confirmacao.html" class="confirm-button">Confirmar Compra</a>
@@ -231,7 +271,21 @@
         mbwayFields.classList.add('hidden');
       }
     }
+
+    function applyVoucher() {
+      // Simulação da aplicação de voucher (pode ser feita através de uma função real de validação)
+      const voucherCode = document.getElementById("voucher-code").value;
+      let totalAmount = 73.84;  // Total sem desconto
+
+      if (voucherCode === "DESCONTO10") {
+        let discount = 10;  // Desconto de 10€
+        totalAmount -= discount; // Aplica o desconto
+      }
+
+      // Atualiza o total final
+      document.getElementById("final-total-amount").innerText = totalAmount.toFixed(2) + " €";
+    }
   </script>
   
-  </body>
+</body>
 </html>
