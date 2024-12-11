@@ -41,6 +41,15 @@ def cart():
 def userDetails():
     return render_template('userDetails.html')
 
+@views.route('/confirmacao')
+def confirmacao():
+    return render_template('confirmacao.html')
+
+@views.route('/processarPagamento')
+def processarPagamento():
+    return render_template('processarPagamento.html')
+
+
 # user - costumer 
 # ACTIVE ORDERS 
 @views.route('/activeOrders')
