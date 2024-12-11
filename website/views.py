@@ -72,3 +72,14 @@ def warehouseManager():
 @views.route('/deliveryOrderManager')
 def deliveryOrderManager():
     return render_template('deliveryOrderManager.html')
+
+
+#user - Manager 
+@views.route('/manager')
+def manager():
+    return render_template('manager.html')
+
+#user - CIO
+@views.route('/cio')
+def cio():
+    return render_template('cio.html')
