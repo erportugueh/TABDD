@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from mongoengine import connect
 from flask_login import LoginManager
+from flask_login import current_user
 import os
 
 db = SQLAlchemy()
@@ -43,9 +44,19 @@ def create_app():
     login_manager.login_view = 'auth.login'
 
     @login_manager.user_loader
-    def load_user(customer_id):
-        from .models import Customer  # Import only where needed
-        return Customer.query.get(int(customer_id))
+    def load_user(email):
+        from .models import Customer, Employee
+        # Attempt to load user from both Employee and Customer models by email
+        user = Customer.query.filter_by(email=email).first() or Employee.query.filter_by(email=email).first()
+
+        # Debug: Print the user type
+        if user:
+            print(
+                f"Loaded user type: {user.__class__.__name__}, Email: {user.email}")  # Prints 'Customer' or 'Employee'
+        else:
+            print("No user found with email:", email)
+
+        return user
 
     from .views import views
     from .auth import auth

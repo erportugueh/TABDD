@@ -37,19 +37,34 @@ class Customer(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password=password)
 
     def get_id(self):
-        return str(self.customer_id)  # Returns the customer_id as a string
+        return self.customer_id  # Default behavior for compatibility
+
+    def get_email(self):
+        return self.email
 
     def __str__(self):
         return '<Customer %r>' % Customer.id
 
+<<<<<<< Updated upstream
 class Employee(db.Model):
+=======
+    @property
+    def type(self):
+        return 'Customer'
+
+class Employee(db.Model, UserMixin):
+>>>>>>> Stashed changes
     __tablename__ = 'EMPLOYEES'  # Match the table name in Oracle
 
     employee_id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Identity column
     name = db.Column(db.String(25), nullable=False)  # Name column
     account_id = db.Column(db.String(20), nullable=False, unique=True)  # Account_ID column
     email = db.Column(db.String(35), nullable=False, unique=True)  # Email column
+<<<<<<< Updated upstream
     password = db.Column(db.String(20), nullable=False)  # Password_Hash column
+=======
+    password_hash = db.Column(db.String(200), nullable=False)  # PASSWORD_HASH
+>>>>>>> Stashed changes
     role = db.Column(db.String(15), nullable=False)  # Role column
 
     @property
@@ -63,8 +78,15 @@ class Employee(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return f"<Employee(name={self.name}, email={self.email}, role={self.role})>"
+    def get_id(self):
+        return self.email
+
+    def __str__(self):
+        return '<Employee %r>' % Employee.id
+
+    @property
+    def type(self):
+        return 'Employee'
 
 class Item(db.Model):
     __tablename__ = 'ITEMS'  # Oracle table name

@@ -252,7 +252,10 @@
                     <a href="/logout" class="btn btn-danger btn-logout">Logout</a>
                 </li>
 
+<<<<<<< Updated upstream
                 <!-- Conta de usuário -->
+=======
+>>>>>>> Stashed changes
                 <!-- Conta de usuário com dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -260,12 +263,37 @@
                         My Account
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+<<<<<<< Updated upstream
                         <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a>
                         </li>
+=======
+                        {% if current_user.type == 'Customer' %}
+                        <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
+>>>>>>> Stashed changes
                         <li><a class="dropdown-item" href="/activeOrders/{{ current_user.customer_id }}">Ordens
                                 Ativas</a></li>
                         <li><a class="dropdown-item" href="/OrdersReviews/{{ current_user.customer_id }}">Minhas Ordens
                                 e Avaliações</a></li>
+<<<<<<< Updated upstream
+=======
+                        {% elif current_user.role == 'Delivery Order Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
+                        {% elif current_user.role == 'Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/manager">Management</a></li>
+                        {% elif current_user.role == 'CIO' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
+                        {% elif current_user.role == 'Warehouse Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
+                        {% endif %}
+>>>>>>> Stashed changes
                     </ul>
                 </li>
 
@@ -300,7 +328,15 @@
 
                 <!-- Registro -->
                 <li class="nav-item">
+<<<<<<< Updated upstream
                     <a href="/sign-up" class="btn btn-primary">Register</a>
+=======
+                    <a href="/sign-up" class="btn btn-primary">Registrar</a>
+                    <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+                <li class="nav-item">
+                    <a href="/employee-sign-up" class="btn btn-primary">Registrar Funcionario</a>
+>>>>>>> Stashed changes
                     <!-- Certifique-se de que a rota de signup existe -->
                 </li>
             </ul>

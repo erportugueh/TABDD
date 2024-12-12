@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Utilizador</title>
+    <title>Detalhes do Funcionário</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
 
     <style>
         body {
@@ -17,7 +16,7 @@
             background-color: #f8f9fa;
         }
 
-        .user-details-container {
+        .employee-details-container {
             max-width: 900px;
             margin: 40px auto;
             background-color: #ffffff;
@@ -26,17 +25,17 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .user-details-header {
+        .employee-details-header {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .user-details-header h1 {
+        .employee-details-header h1 {
             font-size: 32px;
             color: #333;
         }
 
-        .user-info-card {
+        .employee-info-card {
             background-color: #e9f7fe;
             border-radius: 12px;
             padding: 20px;
@@ -44,13 +43,13 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .user-info-card h5 {
+        .employee-info-card h5 {
             font-size: 18px;
             color: #007bff;
             margin-bottom: 10px;
         }
 
-        .user-info-card p {
+        .employee-info-card p {
             font-size: 16px;
             color: #333;
         }
@@ -124,7 +123,6 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/">XPTOISEP</a>
 
-
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a href="/logout" class="btn btn-danger btn-logout">Logout</a>
@@ -134,127 +132,64 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         My Account
                     </a>
-
-
-                    <ul class="dropdown-menu" id="userDropdown" aria-labelledby="navbarDropdown">
-                        <!-- Conteúdo do menu será gerado pelo JavaScript -->
+                    <ul class="dropdown-menu" id="employeeDropdown" aria-labelledby="navbarDropdown">
+                        {% if current_user.role == 'Delivery Order Manager' %}
+                        <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
+                        {% elif current_user.role == 'Manager' %}
+                        <li><a class="dropdown-item" href="/manager">Management</a></li>
+                        {% elif current_user.role == 'CIO' %}
+                        <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
+                        {% elif current_user.role == 'Warehouse Manager' %}
+                        <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="/userDetails">Account Info</a></li>
                     </ul>
-
                 </li>
-                <li class="nav-item" id="userCart">
-                </li>
-
             </ul>
         </div>
     </nav>
 
-    <!-- User Details -->
-    <div class="user-details-container">
+    <!-- Employee Details -->
+    <div class="employee-details-container">
         <div class="text-start">
             <a href="/" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left-circle me-2"></i> Voltar para a Home
             </a>
         </div>
-        <div class="user-details-header">
-            <h1>Detalhes do Utilizador</h1>
+        <div class="employee-details-header">
+            <h1>Detalhes do Funcionário</h1>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
+                <div class="employee-info-card">
                     <h5>Nome</h5>
                     <p>{{ current_user.name }}</p>
                 </div>
             </div>
 
             <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
+                <div class="employee-info-card">
                     <h5>Email</h5>
                     <p>{{ current_user.email }}</p>
                 </div>
             </div>
 
             <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
-                    <h5>Endereço</h5>
-                    <p>{{ current_user.address }}</p>
+                <div class="employee-info-card">
+                    <h5>Role</h5>
+                    <p>{{ current_user.role }}</p>
                 </div>
             </div>
 
             <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
-                    <h5>Código Postal</h5>
-                    <p>{{ current_user.postal_code }}</p>
-                </div>
-            </div>
-
-            <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
-                    <h5>NIF</h5>
-                    <p>{{ current_user.nif }}</p>
-                </div>
-            </div>
-
-            <div class="col-sm-6 mb-3">
-                <div class="user-info-card">
-                    <h5>Telefone</h5>
-                    <p>{{ current_user.phone }}</p>
+                <div class="employee-info-card">
+                    <h5>Account ID</h5>
+                    <p>{{ current_user.account_id }}</p>
                 </div>
             </div>
         </div>
     </div>
-
-<<<<<<< Updated upstream
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>// Simular o tipo de utilizador autenticado
-        const userType = 'Customer'; // Exemplo: alterar para 'Customer', 'Manager', 'Delivery Order Manager', 'CIO', ou 'Warehouse Manager'
-
-        // Referência para o elemento do dropdown
-        const dropdownMenu = document.getElementById('userDropdown');
-        const userCart = document.getElementById('userCart');
-
-
-        // Estrutura dos menus para cada tipo de utilizador
-        if (userType === 'Customer') {
-            dropdownMenu.innerHTML = `
-                <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
-                <li><a class="dropdown-item" href="/userActiveOrders">Ordens Ativas</a></li>
-                <li><a class="dropdown-item" href="/userReviews">Minhas Ordens e Avaliações</a></li>
-            `
-            userCart.innerHTML = `
-              <a href="/cart/cart_view" class="nav-link">
-                        Carrinho
-
-                    </a>
-                   `
-                ;
-        } else if (userType === 'Delivery Order Manager') {
-            dropdownMenu.innerHTML = `
-                <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
-                <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
-            `;
-        } else if (userType === 'Manager') {
-            dropdownMenu.innerHTML = `
-                <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
-                <li><a class="dropdown-item" href="/manager">Management</a></li>
-            `;
-        } else if (userType === 'CIO') {
-            dropdownMenu.innerHTML = `
-                <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
-                <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
-            `;
-        } else if (userType === 'Warehouse Manager') {
-            dropdownMenu.innerHTML = `
-                <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
-                <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
-            `;
-        }
-
-    </script>
-=======
-
->>>>>>> Stashed changes
 </body>
 
 </html>

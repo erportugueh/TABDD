@@ -57,6 +57,83 @@
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </form>
 
+<<<<<<< Updated upstream
+=======
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Categorias
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="shirts">
+                                <button class="dropdown-item" type="submit">Shirts</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="pants">
+                                <button class="dropdown-item" type="submit">Pants</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="outerwear">
+                                <button class="dropdown-item" type="submit">Outwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="sportswear">
+                                <button class="dropdown-item" type="submit">Sportwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="underwear">
+                                <button class="dropdown-item" type="submit">Underwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="footwear">
+                                <button class="dropdown-item" type="submit">Shoes</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="suits">
+                                <button class="dropdown-item" type="submit">Suits</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="earrings">
+                                <button class="dropdown-item" type="submit">Earrings</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="bracelets">
+                                <button class="dropdown-item" type="submit">Bracelets</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="socks">
+                                <button class="dropdown-item" type="submit">Socks</button>
+                            </form>
+                        </li>
+                    </ul>
+
+
+                </li>
+            </ul>
+
+>>>>>>> Stashed changes
             <!-- Navegação para usuários autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <!-- Logout  -->
@@ -64,7 +141,10 @@
                     <a href="/logout" class="btn btn-danger btn-logout">Logout</a>
                 </li>
 
+<<<<<<< Updated upstream
                 <!-- Conta de usuário -->
+=======
+>>>>>>> Stashed changes
                 <!-- Conta de usuário com dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -72,22 +152,59 @@
                         My Account
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+<<<<<<< Updated upstream
                         <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a>
                         </li>
+=======
+                        {% if current_user.type == 'Customer' %}
+                        <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
+>>>>>>> Stashed changes
                         <li><a class="dropdown-item" href="/activeOrders/{{ current_user.customer_id }}">Ordens
                                 Ativas</a></li>
                         <li><a class="dropdown-item" href="/OrdersReviews/{{ current_user.customer_id }}">Minhas Ordens
                                 e Avaliações</a></li>
+<<<<<<< Updated upstream
                     </ul>
                 </li>
 
+=======
+                        {% elif current_user.role == 'Delivery Order Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
+                        {% elif current_user.role == 'Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/manager">Management</a></li>
+                        {% elif current_user.role == 'CIO' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
+                        {% elif current_user.role == 'Warehouse Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                {% if current_user.is_authenticated and current_user.type == 'Customer' %}
+
+>>>>>>> Stashed changes
                 <!-- Carrinho -->
                 <li class="nav-item">
                     <a href="/cart/cart_view" class="nav-link">
                         Carrinho
+<<<<<<< Updated upstream
 
                     </a>
                 </li>
+=======
+                    </a>
+                </li>
+                {% endif %}
+
+>>>>>>> Stashed changes
             </ul>
         </div>
     </nav>
@@ -104,6 +221,83 @@
                 <button class="btn btn-outline-success" type="submit">Pesquisar</button>
             </form>
 
+<<<<<<< Updated upstream
+=======
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Categorias
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="shirts">
+                                <button class="dropdown-item" type="submit">Shirts</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="pants">
+                                <button class="dropdown-item" type="submit">Pants</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="outerwear">
+                                <button class="dropdown-item" type="submit">Outwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="sportswear">
+                                <button class="dropdown-item" type="submit">Sportwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="underwear">
+                                <button class="dropdown-item" type="submit">Underwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="footwear">
+                                <button class="dropdown-item" type="submit">Shoes</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="suits">
+                                <button class="dropdown-item" type="submit">Suits</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="earrings">
+                                <button class="dropdown-item" type="submit">Earrings</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="bracelets">
+                                <button class="dropdown-item" type="submit">Bracelets</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="socks">
+                                <button class="dropdown-item" type="submit">Socks</button>
+                            </form>
+                        </li>
+                    </ul>
+
+
+                </li>
+            </ul>
+
+>>>>>>> Stashed changes
             <!-- Navegação para usuários NÃO autenticados -->
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <!-- Login -->
@@ -113,7 +307,15 @@
 
                 <!-- Registro -->
                 <li class="nav-item">
+<<<<<<< Updated upstream
                     <a href="/sign-up" class="btn btn-primary">Register</a>
+=======
+                    <a href="/sign-up" class="btn btn-primary">Registrar</a>
+                    <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+                <li class="nav-item">
+                    <a href="/employee-sign-up" class="btn btn-primary">Registrar Funcionario</a>
+>>>>>>> Stashed changes
                     <!-- Certifique-se de que a rota de signup existe -->
                 </li>
             </ul>
@@ -156,7 +358,11 @@
                 <a href="/product/{{ product.item_id }}" style="text-decoration: none; color: inherit;">
                     <div class="product-card text-center">
                         <img src="{{ product.image }}" class="img-fluid mb-3" alt="Product Image">
+<<<<<<< Updated upstream
                         <h5>{{ product.item_id }}</h5>
+=======
+                        <h5>{{ product.name }}</h5>
+>>>>>>> Stashed changes
                         <h3>{{ product.category }} - {{ product.subcategory }}</h3>
                         <p><strong>€{{ product.price }}</strong></p>
                     </div>
@@ -178,6 +384,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< Updated upstream
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>// Simular o tipo de utilizador autenticado
         const userType = 'Customer'; // Exemplo: alterar para 'Customer', 'Manager', 'Delivery Order Manager', 'CIO', ou 'Warehouse Manager'
@@ -230,6 +437,10 @@
             dropdownContainer.style.display = dropdownContainer.style.display === 'block' ? 'none' : 'block';
         });
     </script>
+=======
+
+
+>>>>>>> Stashed changes
 </body>
 
 </html>

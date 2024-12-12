@@ -17,7 +17,13 @@ def home():
 
 @views.route('/search', methods=['GET'])
 def search():
+<<<<<<< Updated upstream
     search_query = request.args.get('query')  # Use 'form.get()' for POST method
+=======
+
+    search_query = request.args.get('query')  # Use 'form.get()' for POST method
+    print(search_query)
+>>>>>>> Stashed changes
     if search_query:
         # Perform the search (MongoDB example)
         products = Product.objects(category__icontains=search_query)
@@ -91,8 +97,17 @@ def get_product(id):
         "default.jpg"
     )
     image_path = f"../static/images/{image_file}"
+<<<<<<< Updated upstream
     product = {
         "item_id": product.item_id,
+=======
+
+    item = Item.query.filter_by(item_id=id).first()
+
+    product = {
+        "item_id": product.item_id,
+        "name": item.name,
+>>>>>>> Stashed changes
         "price": product.price,
         "category": product.category,
         "subcategory": product.subcategory,

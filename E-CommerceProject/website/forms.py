@@ -19,3 +19,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Enter Your Password', validators=[DataRequired()])
     submit = SubmitField('Log in')
 
+<<<<<<< Updated upstream
+=======
+class EmployeeSignUpForm(FlaskForm):
+    username = StringField('User Name', validators=[DataRequired(), Length(max=50)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password1 = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Confirm Password', validators=[DataRequired()])
+    role = StringField('Role', validators=[DataRequired(), Length(max=15)])
+    submit = SubmitField('Sign Up')
+>>>>>>> Stashed changes
