@@ -121,10 +121,38 @@
             background-color: #343a40;
             color: white;
         }
+        .btn-help {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        
+        .btn-help i {
+            font-size: 18px;
+        }
+        
+        .btn-help:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+        
+        
     </style>
 </head>
 <body>
-
+    <a href="/help" class="btn-help">
+        <i class="bi bi-question-circle me-2"></i> Help
+    </a>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -147,7 +175,7 @@
                 <li class="nav-item">
                     <a href="/cart" class="nav-link">
                         Carrinho 
-                        <span class="badge bg-success">0</span>
+                       
                     </a>
                 </li>
             </ul>

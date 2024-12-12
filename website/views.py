@@ -50,6 +50,21 @@ def processarPagamento():
     return render_template('processarPagamento.html')
 
 
+@views.route('/homeSearch')
+def homeSearch():
+    return render_template('homeSearch.html')
+
+# TERMOS
+@views.route('/termos')
+def termos():
+    return render_template('termos.html')
+
+
+@views.route('/help')
+def help():
+    return render_template('help.html')
+
+
 # user - costumer 
 # ACTIVE ORDERS 
 @views.route('/activeOrders')
@@ -60,7 +75,6 @@ def activeOrders():
 @views.route('/ordersReview')
 def ordersReview():
     return render_template('ordersReview.html')
-
 
 #user -  Warehouse Manager 
 @views.route('/warehouseManager')
