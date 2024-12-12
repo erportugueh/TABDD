@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            padding: 50px 0;
+            text-align: center;
+            background-color: #343a40;
+            color: white;
+        }
+
+        .features {
+            padding: 30px;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    {% if current_user.is_authenticated %}
+    <!-- Header para usuários autenticados -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">XPTOISEP</a>
+
+            <!-- Barra de pesquisa -->
+            <form class="d-flex me-auto" role="search" style="max-width: 400px;" action="/search" method="GET">
+                <input class="form-control me-2" type="search" name="query" placeholder="Pesquisar produtos..."
+                    aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+            </form>
+
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Categorias
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="shirts">
+                                <button class="dropdown-item" type="submit">Shirts</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="pants">
+                                <button class="dropdown-item" type="submit">Pants</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="outerwear">
+                                <button class="dropdown-item" type="submit">Outwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="sportswear">
+                                <button class="dropdown-item" type="submit">Sportwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="underwear">
+                                <button class="dropdown-item" type="submit">Underwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="footwear">
+                                <button class="dropdown-item" type="submit">Shoes</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="suits">
+                                <button class="dropdown-item" type="submit">Suits</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="earrings">
+                                <button class="dropdown-item" type="submit">Earrings</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="bracelets">
+                                <button class="dropdown-item" type="submit">Bracelets</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="socks">
+                                <button class="dropdown-item" type="submit">Socks</button>
+                            </form>
+                        </li>
+                    </ul>
+
+
+                </li>
+            </ul>
+
+            <!-- Navegação para usuários autenticados -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- Logout  -->
+                <li class="nav-item">
+                    <a href="/logout" class="btn btn-danger btn-logout">Logout</a>
+                </li>
+
+                <!-- Conta de usuário com dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        My Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if current_user.type == 'Customer' %}
+                        <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
+                        <li><a class="dropdown-item" href="/activeOrders/{{ current_user.customer_id }}">Ordens
+                                Ativas</a></li>
+                        <li><a class="dropdown-item" href="/OrdersReviews/{{ current_user.customer_id }}">Minhas Ordens
+                                e Avaliações</a></li>
+                        {% elif current_user.role == 'Delivery Order Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
+                        {% elif current_user.role == 'Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/manager">Management</a></li>
+                        {% elif current_user.role == 'CIO' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
+                        {% elif current_user.role == 'Warehouse Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
+                        <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- Carrinho -->
+                <li class="nav-item">
+                    <a href="/cart/cart_view" class="nav-link">
+                        Carrinho
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% else %}
+    <!-- Header para usuários NÃO autenticados -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">XPTOISEP</a>
+
+            <!-- Barra de pesquisa -->
+            <form class="d-flex me-auto" role="search" style="max-width: 400px;" action="/search" method="GET">
+                <input class="form-control me-2" type="search" name="query" placeholder="Pesquisar produtos..."
+                    aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+            </form>
+
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Categorias
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="shirts">
+                                <button class="dropdown-item" type="submit">Shirts</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="pants">
+                                <button class="dropdown-item" type="submit">Pants</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="outerwear">
+                                <button class="dropdown-item" type="submit">Outwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="sportswear">
+                                <button class="dropdown-item" type="submit">Sportwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="underwear">
+                                <button class="dropdown-item" type="submit">Underwear</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="footwear">
+                                <button class="dropdown-item" type="submit">Shoes</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="suits">
+                                <button class="dropdown-item" type="submit">Suits</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="earrings">
+                                <button class="dropdown-item" type="submit">Earrings</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="bracelets">
+                                <button class="dropdown-item" type="submit">Bracelets</button>
+                            </form>
+                        </li>
+                        <li>
+                            <form action="/search" method="GET">
+                                <input type="hidden" name="query" value="socks">
+                                <button class="dropdown-item" type="submit">Socks</button>
+                            </form>
+                        </li>
+                    </ul>
+
+
+                </li>
+            </ul>
+
+            <!-- Navegação para usuários NÃO autenticados -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <!-- Login -->
+                <li class="nav-item">
+                    <a href="/login" class="nav-link">Login</a> <!-- Certifique-se de que a rota de login existe -->
+                </li>
+
+                <!-- Registro -->
+                <li class="nav-item">
+                    <a href="/sign-up" class="btn btn-primary">Registrar</a>
+                    <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+                <li class="nav-item">
+                    <a href="/employee-sign-up" class="btn btn-primary">Registrar Funcionario</a>
+                    <!-- Certifique-se de que a rota de signup existe -->
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    {% endif %}
+
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Bem-vindo ao Nosso Ecommerce</h1>
+        <p>Encontra os melhores produtos ao melhor preço!</p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container features">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h3>Produtos de Qualidade</h3>
+                <p>Trabalhamos apenas com os melhores fornecedores.</p>
+            </div>
+            <div class="col-md-4">
+                <h3>Entrega Rápida</h3>
+                <p>Recebe os teus produtos em tempo recorde.</p>
+            </div>
+            <div class="col-md-4">
+                <h3>Suporte 24/7</h3>
+                <p>Estamos sempre prontos para te ajudar.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        {% if result_string %}
+        <p style="font-size: 24px; text-align: center; margin: 20px 0;">
+            {{ result_string }}
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Catálogo de Produtos -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Catálogo de Produtos</h1>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <a href="/product/{{ product.item_id }}" style="text-decoration: none; color: inherit;">
+                    <div class="product-card text-center">
+                        <img src="{{ product.image }}" class="img-fluid mb-3" alt="Product Image">
+                        <h5>{{ product.name }}</h5>
+                        <h3>{{ product.category }} - {{ product.subcategory }}</h3>
+                        <p><strong>€{{ product.price }}</strong></p>
+                    </div>
+                </a>
+                <form action="/cart/add" method="POST" style="text-align: center;">
+                    <input type="hidden" name="customer_id" value="{{ current_user.get_id() }}">
+                    <input type="hidden" name="item_id" value="{{ product.item_id }}">
+                    <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
+        <p>Por: Elmer | Francisca | Rebeca | Vasco</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
