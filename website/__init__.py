@@ -51,6 +51,7 @@ def create_app():
     from .auth import auth
     from .admin import admin
     from .cart import cart_bp
+    from .customer import customer
 
     from .models import (Customer, Employee, Item, Service, SupplierItem, Supplier, Voucher, Warehouse, Zone,
                          PriceHistory, Product, ShippingStatus, OrderItem, Order, Rating, BrowsingHistory)
@@ -59,6 +60,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/') #localhost:5000/auth/login or register or change password
     app.register_blueprint(admin, url_prefix='/')  # localhost:5000
     app.register_blueprint(cart_bp, url_prefix='/') #localhost:5000
+    app.register_blueprint(customer, url_prefix='/')  # localhost:5000
 
     # Test Oracle connection
     try:

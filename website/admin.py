@@ -7,10 +7,6 @@ from .models import (Customer, Employee, Item, Service, SupplierItem, Supplier, 
 from flask import Flask, render_template
 from flask_login import current_user
 
-<<<<<<< Updated upstream
-admin = Blueprint('admin_warehouse_manager', __name__)
-
-=======
 admin = Blueprint('admin', __name__)
 
 @admin.route('/manager')
@@ -18,4 +14,3 @@ admin = Blueprint('admin', __name__)
 def display_customers():
 
         return
->>>>>>> Stashed changes

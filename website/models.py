@@ -1,14 +1,11 @@
 from . import db
-import random
-from datetime import datetime  # For default timestamps and date handling
-
-from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import CheckConstraint
-
-# MongoEngine for MongoDB Models
-from mongoengine import Document, EmbeddedDocument, fields
+from mongoengine import (
+    Document, EmbeddedDocument, fields, EmbeddedDocumentField, ListField, IntField, StringField, FloatField, DateTimeField, DynamicEmbeddedDocument
+)
+from datetime import datetime
 
 # Oracle Tables
 class Customer(db.Model, UserMixin):
@@ -70,7 +67,7 @@ class Employee(db.Model):
         return f"<Employee(name={self.name}, email={self.email}, role={self.role})>"
 
 class Item(db.Model):
-    __tablename__ = 'Items'  # Oracle table name
+    __tablename__ = 'ITEMS'  # Oracle table name
 
     item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # ITEM_ID
     name = db.Column(db.String(20), nullable=True)  # NAME
@@ -80,11 +77,6 @@ class Item(db.Model):
     primary_supplier_id = db.Column(db.Integer, nullable=False)  # PRIMARY_SUPPLIER_ID
     purchase_price = db.Column(db.Float, nullable=False)  # PURCHASE_PRICE
     sales_price = db.Column(db.Float, nullable=False)  # SALES_PRICE
-
-    # Add validation for 'Type' column
-    __table_args__ = (
-        db.CheckConstraint("Type IN ('Service', 'Product')", name='check_type_valid'),
-    )
 
     def __repr__(self):
         return (f"<Item(name={self.name}, brand={self.brand}, type={self.type}, "
@@ -166,67 +158,82 @@ class Zone(db.Model):
                 f"warehouse_id={self.warehouse_id})>")
 
 # MongoDB Tables
+class TechnicalInfo(DynamicEmbeddedDocument):
+    # Allows arbitrary key-value pairs for technical attributes
+    pass
+
+class PhysicalInfo(DynamicEmbeddedDocument):
+    # Allows arbitrary key-value pairs for physical attributes
+    pass
+
 class PriceHistory(EmbeddedDocument):
-    """
-    Embedded document to store the history of price changes.
-    """
-    price = fields.FloatField(required=True, db_field='Price')  # Map to MongoDB schema
-    changed_at = fields.DateTimeField(required=True, db_field='ChangedAt')  # Map to MongoDB schema
-    reason = fields.StringField(db_field='Reason')  # Map to MongoDB schema
+    Price = fields.FloatField(required=True)
+    ChangedAt = fields.DateTimeField(required=True)
+    Reason = fields.StringField()
 
 class Product(Document):
-    """
-    MongoDB collection model for Products.
-    """
-    meta = {'collection': 'Products'}  # The name of your MongoDB collection
-
-    _id = fields.IntField(required=True, primary_key=True)
-    item_id = fields.IntField(required=True, db_field='Item_ID')  # Map to MongoDB schema
-    product_warehouse_id = fields.IntField(required=True, db_field='Product_Warehouse_ID')  # Map to MongoDB schema
-    product_zone_id = fields.IntField(required=True, db_field='Product_Zone_ID')  # Map to MongoDB schema
-    quantity_in_stock = fields.IntField(required=True, db_field='Quantity_in_Stock')  # Map to MongoDB schema
-    minimum_stock = fields.IntField(required=True, db_field='Minimum_Stock')  # Map to MongoDB schema
-    price = fields.FloatField(required=True, db_field='Price')  # Map to MongoDB schema
-    category = fields.StringField(required=True, db_field='Category')  # Map to MongoDB schema
-    subcategory = fields.StringField(required=True, db_field='Subcategory')  # Map to MongoDB schema
-    discount = fields.FloatField(db_field='Discount', null=True)  # Map to MongoDB schema
-    price_history = fields.EmbeddedDocumentListField(PriceHistory, db_field='PriceHistory')  # Map to MongoDB schema
+    meta = {'collection': 'Products'}
+    item_id = fields.IntField(required=True, unique=True)
+    product_warehouse_id = fields.IntField(required=True)
+    product_zone_id = fields.IntField(required=True)
+    quantity_in_stock = fields.IntField(required=True)
+    minimum_stock = fields.IntField(required=True)
+    price = fields.FloatField(required=True)
+    category = fields.StringField(required=True)
+    subcategory = fields.StringField(required=True)
+    discount = fields.FloatField(null=True)
+    technical_info = fields.EmbeddedDocumentListField(TechnicalInfo)
+    physical_info = fields.EmbeddedDocumentListField(PhysicalInfo)
+    price_history = fields.EmbeddedDocumentListField(PriceHistory)
+    image = fields.FileField()  # Stores binary image data
+    Product_Aisle_ID = fields.IntField(required=True)
 
 class ShippingStatus(EmbeddedDocument):
-    """
-    Embedded document to track shipping status changes over time.
-    """
-    status = fields.StringField(
+    Status = StringField(
         required=True,
-        choices=["processing", "reparing shipping", "shipped", "in transit", "delivered"]
+        choices=['processing', 'preparing shipping', 'shipped', 'in transit', 'delivered'],
+        description="Shipping status of the order."
     )
-    location = fields.StringField()  # Location is optional
-    timestamp = fields.DateTimeField(required=True, default=datetime.utcnow)
+    Location = StringField(description="Current location of the shipment.")
+    Timestamp = DateTimeField(required=True, description="Timestamp of the status update.")
 
 class OrderItem(EmbeddedDocument):
-    """
-    Embedded document to store items in an order.
-    """
-    order_item_id = fields.IntField()  # Auto-generated, not required explicitly
-    fk_item_id = fields.IntField(required=True)
-    fk_order_id = fields.IntField()  # Matches Order_ID, optional for MongoDB
-    quantity = fields.IntField(required=True)
-    price = fields.FloatField(required=True)
+    Order_Item_ID = IntField(description="Auto-generated Order Item ID.")
+    Item_ID = IntField(required=True, description="Foreign key to the Item ID.")
+    Quantity = IntField(required=True, description="Quantity of the item ordered.")
+    Price = FloatField(required=True, description="Price of the item ordered.")
 
 class Order(Document):
-    """
-    MongoDB collection model for Orders.
-    """
-    meta = {'collection': 'Orders'}  # MongoDB collection name
+    meta = {'collection': 'Orders'}  # Specify the correct collection name
+    Order_ID = IntField(primary_key=True, description="Auto-generated Order ID.")
+    Customer_ID = IntField(required=True, description="Customer ID placing the order.")
+    Delivery_Address = StringField(
+        max_length=25, required=True, description="Delivery address for the order."
+    )
+    Payment_Status = StringField(required=True, description="Payment status of the order.")
+    Checkout_Total = FloatField(required=True, description="Total checkout amount.")
+    Discount = FloatField(description="Discount amount applied to the order.")
+    Voucher_code = StringField(
+        description="Voucher code applied to the order (nullable).", null=True
+    )
+    Purchase_date = DateTimeField(
+        required=True, default=datetime.utcnow, description="Date the order was placed."
+    )
+    Delivery_date = DateTimeField(
+        description="Date the order is delivered (nullable).", null=True
+    )
+    Time_preparation = IntField(description="Preparation time in minutes.")
+    Shipping_Status = ListField(
+        EmbeddedDocumentField(ShippingStatus),
+        required=True,
+        description="List of shipping status updates."
+    )
+    OrderItems = ListField(
+        EmbeddedDocumentField(OrderItem),
+        required=True,
+        description="List of items in the order."
 
-    # Fields as per schema
-    order_id = fields.IntField(required=False)  # Auto-generated
-    customer_id = fields.IntField(required=True)
-    delivery_address = fields.StringField(max_length=25, required=True)
-    payment_status = fields.StringField(required=True)
-    checkout_total = fields.FloatField(required=True)
-    shipping_status = fields.EmbeddedDocumentListField(ShippingStatus, required=True)  # Array of statuses
-    order_items = fields.EmbeddedDocumentListField(OrderItem, required=True)  # Array of items
+    )
 
 class Rating(Document):
     """

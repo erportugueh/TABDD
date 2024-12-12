@@ -91,7 +91,6 @@ def login():
                 return redirect('/')
             else:
                 flash('Incorrect Email or Password')
-
         else:
             flash('Account does not exist please Sign Up')
     else:
@@ -107,8 +106,3 @@ def log_out():
     logout_user()
     return redirect('/')
 
-@auth.route('/profile/<int:customer_id>')
-@login_required
-def profile(customer_id):
-    customer = Customer.query.get(customer_id)
-    return render_template('profile.html', customer=customer)

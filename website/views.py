@@ -1,53 +1,97 @@
-from flask import Blueprint, render_template
-from .models import Product
+from flask import Blueprint, render_template, request
+from .models import Product, Item
+import os
+from random import sample
 
 views = Blueprint('views', __name__)
 
 @views.route('/')
 def home():
-    return render_template('home.html')
+    # Generate 6 random numbers (IDs) between 1 and 100
+    random_ids = sample(range(1, 101), 9)
+    products_data = []
+    for id in random_ids:
+        product = get_product(id)
+        products_data.append(product)
+    return render_template('home.html', products=products_data)
 
-<<<<<<< Updated upstream
+@views.route('/search', methods=['GET'])
+def search():
+    search_query = request.args.get('query')  # Use 'form.get()' for POST method
+    if search_query:
+        # Perform the search (MongoDB example)
+        products = Product.objects(category__icontains=search_query)
+        if products:
+            products_data = []
+            for product in products:
+                product = get_product(product.item_id)
+                products_data.append(product)
+            return render_template('home_search.html', products=products_data, result_string = f"Results for '{search_query}'")
+        else:
+            return render_template('home_search.html', products=[], result_string = f"No items that match '{search_query}' were found")
 
+@views.route('/product/<int:item_id>', methods=['GET'])
+def product_details(item_id):
+    id = item_id
+    # Fetch products matching the random IDs
+    product = Product.objects(item_id=id).first()
+    # Extract technical_info and physical_info into dictionaries
 
-=======
+    tech_dict = {list(info.to_mongo().keys())[0]: list(info.to_mongo().values())[0] for info in product.technical_info}
+    physical_dict = {list(info.to_mongo().keys())[0]: list(info.to_mongo().values())[0] for info in
+                     product.physical_info}
 
-@views.route('/product')
-def product_details():
-    # Dados fictícios para o produto
+    image_name_prefix = f"{id}"
+    image_directory = r"C:\Git\TABDD\E-Commerce-Main-App\E-CommerceProject\website\static\images"
+    # Find the image file that starts with the item_id
+    image_file = next(
+        (img for img in os.listdir(image_directory) if img.startswith(image_name_prefix)),
+        "default.jpg"
+    )
+    image_path = f"../static/images/{image_file}"
+
+    item = Item.query.filter_by(item_id=id).first()
+    print(item)
     product = {
-        'name': 'Produto Fictício',
-        'image_url': 'https://via.placeholder.com/500',
-        'price': 'R$ 29,99',
-        'color': 'Azul',
-        'description': 'Este é um produto de teste para visualizar o front-end.'
+        "item_id": product.item_id,
+        "name": item.name,
+        "description": item.description,
+        "type": item.type,
+        "price": product.price,
+        "discount": product.discount * 100,
+        "category": product.category,
+        "subcategory": product.subcategory,
+        "tech": tech_dict,
+        "physical": physical_dict,
+        "image": image_path
     }
 
-    # Comentários fictícios
-    comments = [
-        {'user': 'João', 'text': 'Muito bom, recomendo!'},
-        {'user': 'Maria', 'text': 'Ótimo produto! Vale a pena!'},
-        {'user': 'Carlos', 'text': 'Gostei bastante, mas poderia ser mais barato.'}
-    ]
+    return render_template('productDetails.html', product=product)
 
-    # Renderizando o template com as informações
-    return render_template('productDetails.html', product=product, comments=comments)
+def get_product(id):
+    # Fetch products matching the random IDs
+    product = Product.objects(item_id=id).first()
+    # Extract technical_info and physical_info into dictionaries
 
+    tech_dict = {list(info.to_mongo().keys())[0]: list(info.to_mongo().values())[0] for info in product.technical_info}
+    physical_dict = {list(info.to_mongo().keys())[0]: list(info.to_mongo().values())[0] for info in
+                     product.physical_info}
 
-@views.route('/checkout')
-def checkout():
-    return render_template('checkout.html')
-
-
-@views.route('/cart')
-def cart():
-    return render_template('cart.html')
-
-@views.route('/search', methods=['POST'])
-def search():
-    search_query = request.form.get('search')
-    products = Product.objects(name__icontains=search_query)  # MongoDB query
-    return render_template('home.html', products=products)
-
-
->>>>>>> Stashed changes
+    image_name_prefix = f"{id}"
+    image_directory = r"C:\Git\TABDD\E-Commerce-Main-App\E-CommerceProject\website\static\images"
+    # Find the image file that starts with the item_id
+    image_file = next(
+        (img for img in os.listdir(image_directory) if img.startswith(image_name_prefix)),
+        "default.jpg"
+    )
+    image_path = f"../static/images/{image_file}"
+    product = {
+        "item_id": product.item_id,
+        "price": product.price,
+        "category": product.category,
+        "subcategory": product.subcategory,
+        "tech": tech_dict,
+        "physical": physical_dict,
+        "image": image_path
+    }
+    return product
