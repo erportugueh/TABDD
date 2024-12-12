@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registo - E-Commerce</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Bootstrap CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Reset de estilo */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container principal */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .register-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .register-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+
+        }
+
+        /* Estilo para o formulário */
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        .input-box label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-box input:focus {
+            border-color: #3498db;
+        }
+
+    
+        p {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        p a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #c5cfd6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #91969c;
+        }      
+    </style>
+</head>
+
+<body>
+
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert"
+        style="margin-top: 5px; text-align: center;">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <div class="container">
+        <div class="register-box">
+            <a href="\" class="back-button">
+                <span class="arrow">←</span> Voltar
+            </a>
+            <h2>Registo</h2>
+            <form method="POST">
+                {{ form.hidden_tag() }} <!-- CSRF Token -->
+
+                <div class="input-box">
+                    <label for="username">Nome de Utilizador</label>
+                    {{ form.username }}
+
+                </div>
+                <div class="input-box">
+                    <label for="email">E-mail</label>
+                    {{ form.email }}
+                </div>
+                <div class="input-box">
+                    <label for="password">Senha</label>
+                    {{ form.password1 }}
+                </div>
+                <div class="input-box">
+                    <label for="confirm_password">Confirmar Senha</label>
+                    {{ form.password2 }}
+                </div>
+                <div class="input-box">
+                    <label for="address">Endereço</label>
+                    {{ form.address }}
+                    <div class="input-box">
+                        <label for="postal_code">Código Postal</label>
+                        {{ form.postal_code }}
+                    </div>
+                    <div class="check input-box">
+                        <label for="nif">NIF</label>
+                        {{ form.nif }}
+                    </div>
+
+                    <div class="check input-box">
+                        <label for="gdpr_terms">Aceito os <a href="/termos">Termos e Condições</a></label>
+                        {{ form.gdpr_terms }}
+                    </div>
+                    <br>
+                    <button class="btn">{{ form.submit }}</button>
+            </form>
+
+            <p>Já tens uma conta? <a href="/login">Entrar</a></p>
+        </div>
+    </div>
+
+    {% for message in get_flashed_messages() %}
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 5px;">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+    </div>
+    {% endfor %}
+
+</body>
+
+</html>

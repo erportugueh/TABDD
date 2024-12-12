@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Reset básico */
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #d5d3d2;
+      font-size: 16px;
+    }
+
+    /* Header superior */
+    .header-top {
+      background-color: #f8f9fa;
+      color: #000;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 18px;
+    }
+
+    .header-top a {
+      color: #393a3b;
+      text-decoration: none;
+      font-size: 18px;
+      margin-right: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .header-top a:hover {
+      color: #3e3f40;
+    }
+
+    .checkout-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+    }
+
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .order-summary,
+    .payment-methods,
+    .cart-details {
+      margin-bottom: 20px;
+    }
+
+    .order-summary h2,
+    .payment-methods h2,
+    .voucher h2,
+    .cart-details h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .total,
+    .original-price {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    .voucher {
+      margin-bottom: 20px;
+    }
+
+    .voucher input[type="text"] {
+      width: calc(100% - 110px);
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .voucher button {
+      padding: 8px 20px;
+      background-color: #5cbaf9;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .voucher button:hover {
+      background-color: #4aa0e6;
+    }
+
+    .payment-methods label {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .payment-methods img {
+      margin-right: 10px;
+      width: 30px;
+      height: 30px;
+    }
+
+    .confirm-button {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      padding: 15px;
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      margin: 20px auto;
+    }
+
+    .confirm-button:hover {
+      background-color: #45a049;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Cart details */
+    .cart-details div {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 18px;
+    }
+
+    .cart-details .total-amount {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .quantity-buttons {
+      display: flex;
+      align-items: center;
+    }
+
+    .quantity-buttons button {
+      padding: 5px 15px;
+      font-size: 16px;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .quantity-buttons button:hover {
+      background-color: #ddd;
+    }
+
+    .quantity-buttons input {
+      width: 40px;
+      text-align: center;
+      margin: 0 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #343a40;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header para usuários autenticados -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">XPTOISEP</a>
+
+      <!-- Navegação para usuários autenticados -->
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <!-- Logout  -->
+        <li class="nav-item">
+          <a href="/logout" class="btn btn-danger btn-logout">Logout</a>
+        </li>
+
+        <!-- Conta de usuário -->
+        <!-- Conta de usuário com dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            My Account
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
+            <li><a class="dropdown-item" href="/activeOrders/{{ current_user.customer_id }}">Ordens Ativas</a></li>
+            <li><a class="dropdown-item" href="/OrdersReviews/{{ current_user.customer_id }}">Minhas Ordens e
+                Avaliações</a></li>
+          </ul>
+        </li>
+
+        <!-- Carrinho -->
+        <li class="nav-item">
+          <a href="/cart" class="nav-link">
+            Carrinho
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+  <div class="checkout-container">
+    <header class="checkout-header">
+      <h1>Checkout</h1>
+    </header>
+
+    <!-- Resumo da encomenda -->
+    <section class="order-summary">
+      <h2>Resumo da Encomenda</h2>
+      {% if cart and cart.items %}
+      {% for item in cart.items %}
+      <div class="order-item">
+        <span>{{ item.item_name }} - {{ item.quantity }} unidade(s)</span>
+        <span>{{ (item.price - item.price * item.discount) | round(2) }} € (Discount applied:{{ item.discount * 100}}%
+          )</span>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>O seu carrinho está vazio.</p>
+      {% endif %}
+    </section>
+
+    <!-- Carrinho de Compras -->
+    <section class="cart-details">
+      <h2>Detalhes do Carrinho</h2>
+      {% if cart %}
+      <div>
+        <span>Preço Total das Peças:</span>
+        <span id="total-price">{{ results.totals.total_price | round(2) }} €</span>
+      </div>
+      <div>
+        <span>Valor do Shipping:</span>
+        <span id="shipping-amount">{{ results.totals.shipping_cost | round(2) }} €</span>
+      </div>
+      <div>
+        <span>IVA (23%):</span>
+        <span id="tax-amount">{{ results.totals.taxes | round(2) }} €</span>
+      </div>
+      <div>
+        <span>Preço com IVA e Shipping:</span>
+        <span id="total-with-shipping-iva">{{ results.totals.final_total | round(2) }} €</span>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Secção de voucher -->
+    <section class="voucher">
+      <h2>Voucher de Desconto</h2>
+      <form id="voucher-form" method="POST" action="/cart/checkout">
+        <input type="text" name="voucher_code" placeholder="Insira o código do voucher" id="voucher-code" required>
+        <button type="submit">Aplicar</button>
+      </form>
+    </section>
+
+    <!-- Código Voucher -->
+    <section class="cart-details">
+      <div>
+        <span>Código Voucher:</span>
+        <span id="voucher_code">{{ results.totals.voucher_code }}</span>
+      </div>
+    </section>
+
+    <!-- Total com desconto -->
+    <section class="cart-details">
+      <div>
+        <span>Total com Desconto:</span>
+        <span id="final-total-amount">{{ results.totals.final_total_discounted | round(2) }} €</span>
+      </div>
+    </section>
+
+    <!-- Métodos de pagamento -->
+    <section class="payment-methods">
+      <h2>Método de Pagamento</h2>
+      <label>
+        <input type="radio" name="payment" value="mbway" onclick="togglePaymentFields()">
+        <img src="../static/images/mbway.png" alt="MB WAY" width="50">
+        MB WAY
+      </label>
+      <label>
+        <input type="radio" name="payment" value="transferencia" onclick="togglePaymentFields()">
+        <img src="../static/images/multi.png" alt="CreditCard" width="50">
+        Transferência Bancária
+      </label>
+    </section>
+
+    <!-- Campos MB WAY -->
+    <div id="mbwayFields" class="hidden">
+      <label for="phone">Número de Telefone:</label>
+      <input type="text" id="phone" name="phone" placeholder="Ex: 912345678">
+    </div>
+
+    <!-- Campos Transferência Bancária -->
+    <div id="transferFields" class="hidden">
+    </div>
+
+    <!-- Botão de confirmação -->
+    <form action="/cart/confirm_purchase" method="POST">
+      <input type="hidden" name="customer_id" value="{{ current_user.customer_id }}">
+      <input type="hidden" name="voucher_code" value="{{ results.totals.voucher_code }}">
+      <button type="submit" class="confirm-button">Confirmar Compra</button>
+    </form>
+
+  </div>
+
+  <script>
+    function togglePaymentFields() {
+      // Obter elementos
+      const mbwayFields = document.getElementById('mbwayFields');
+      const transferFields = document.getElementById('transferFields');
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+      // Mostrar/ocultar campos com base na seleção
+      if (paymentMethod === 'mbway') {
+        mbwayFields.classList.remove('hidden');
+        transferFields.classList.add('hidden');
+      } else if (paymentMethod === 'transferencia') {
+        transferFields.classList.remove('hidden');
+        mbwayFields.classList.add('hidden');
+      }
+    }
+
+    function applyVoucher() {
+      // Simulação da aplicação de voucher (pode ser feita através de uma função real de validação)
+      const voucherCode = document.getElementById("voucher-code").value;
+      let totalAmount = 73.84;  // Total sem desconto
+
+      if (voucherCode === "DESCONTO10") {
+        let discount = 10;  // Desconto de 10€
+        totalAmount -= discount; // Aplica o desconto
+      }
+
+      // Atualiza o total final
+      document.getElementById("final-total-amount").innerText = totalAmount.toFixed(2) + " €";
+    }
+
+    function updateQuantity(itemId, change) {
+      const item = document.getElementById(itemId);
+      let currentValue = parseInt(item.value);
+      currentValue += change;
+
+      // Impede o valor de ser negativo
+      if (currentValue < 0) currentValue = 0;
+
+      item.value = currentValue;
+
+      // Recalcular o preço total
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const item1Quantity = parseInt(document.getElementById("item1").value);
+      const item2Quantity = parseInt(document.getElementById("item2").value);
+      const item1Price = 27.99;
+      const item2Price = 27.99;
+
+      const totalPrice = (item1Quantity * item1Price) + (item2Quantity * item2Price);
+      const shippingAmount = 5.00;
+      const taxAmount = totalPrice * 0.23;
+      const totalWithShippingIVA = totalPrice + shippingAmount + taxAmount;
+
+      document.getElementById("total-price").innerText = totalPrice.toFixed(2) + " €";
+      document.getElementById("shipping-amount").innerText = shippingAmount.toFixed(2) + " €";
+      document.getElementById("tax-amount").innerText = taxAmount.toFixed(2) + " €";
+      document.getElementById("total-with-shipping-iva").innerText = totalWithShippingIVA.toFixed(2) + " €";
+    }
+
+    updateTotal();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Footer -->
+  <div class="footer">
+    <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
+    <p>Por: Elmer | Francisca | Rebeca | Vasco</p>
+  </div>
+</body>
+
+</html>
