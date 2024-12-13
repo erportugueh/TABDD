@@ -1,0 +1,46 @@
+import cx_Oracle
+from pymongo import MongoClient
+from datetime import datetime, timedelta
+from bson.objectid import ObjectId
+import random
+from datetime import datetime, timedelta
+
+# Connection parameters
+host = "vsgate-s1.dei.isep.ipp.pt"
+port = "10434"
+sid = "xe"
+
+# Construct DSN using SID
+dsn_tns = cx_Oracle.makedsn(host, port, sid=sid)
+
+# Credentials
+username = "C##e_commerce"  # Replace with your username
+password = "qKCH1brdHfWtMFadWdbzWeMJS3rHDJ"  # Replace with your password
+
+try:
+    # Connect to the database
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+    print("Connection successful!")
+
+    # Perform database operations here
+
+    # Close the connection
+    connection.close()
+
+except cx_Oracle.DatabaseError as e:
+    print(f"Database connection error: {e}")
+    
+connection = cx_Oracle.connect(user="C##e_commerce", password="qKCH1brdHfWtMFadWdbzWeMJS3rHDJ", dsn=dsn_tns)
+cursor = connection.cursor()
+
+# String de conexão
+connection_string = "mongodb://ecommerce_user:secure_password@vsgate-s1.dei.isep.ipp.pt:10911/EcommerceDB"
+
+# Conectar ao servidor MongoDB
+client = MongoClient(connection_string)
+
+# Acessar o banco de dados
+db = client["EcommerceDB"]
+
+# Listar coleções para testar
+print(db.list_collection_names())

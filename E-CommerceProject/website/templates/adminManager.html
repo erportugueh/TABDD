@@ -107,14 +107,15 @@
                         Minha Conta
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a>
-                        </li>
-                        <li><a class="dropdown-item" href="/manager">Management</a></li>
-                    </ul>
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
                 </li>
-                <li class="nav-item">
-                    <button>Manager</button>
-                </li>
+                <li><a class="dropdown-item" href="/manager">Management</a></li>
+            </ul>
+            </li>
+            <li class="nav-item">
+                <button>Manager</button>
+            </li>
             </ul>
         </div>
     </nav>
@@ -131,34 +132,20 @@
             <h1>Consultas do Manager</h1>
         </div>
 
-
         <!-- Consulta US13 -->
         <div class="query-card">
             <h5>Produtos comprados pelo cliente com mais vouchers</h5>
-            <p><strong>Cliente com mais vouchers:</strong> <span id="topCustomer">(carregando...)</span></p>
+            <p><strong>Cliente com mais vouchers:</strong> <span id="topCustomer"></span></p>
             <button id="queryUS13Button" class="btn btn-primary">Consultar Produtos</button>
             <div id="queryUS13Result" class="result-table mt-3"></div>
         </div>
 
-
         <!-- Consulta US14 -->
         <div class="query-card">
             <h5>Compras entre junho e 17 de agosto (preparação menor que 10h e mais de 10 dias após encomenda)</h5>
-            <form id="queryUS14Form">
-                <button type="submit" class="btn btn-primary">Consultar</button>
-            </form>
+            <button id="queryUS14Button" class="btn btn-primary">Consultar Compras</button>
             <div id="queryUS14Result" class="result-table mt-3"></div>
         </div>
-
-        <!-- Consulta US15 -->
-        <!--<div class="query-card">
-            <h5>Volume mensal de compras em 2018</h5>
-            <form id="queryUS15Form">
-                <button type="submit" class="btn btn-primary">Consultar</button>
-            </form>
-            <div id="queryUS15Result" class="result-table mt-3"></div>
-        </div>-->
-
     </div>
 
     <!-- Footer -->
@@ -172,23 +159,86 @@
 
     <!-- JavaScript para consultas -->
     <script>
-        // Simulação para obter o cliente com mais vouchers (dados fictícios)
-        const topCustomer = "João Silva"; // Substituir por dados reais no backend
-        document.getElementById('topCustomer').textContent = topCustomer;
-
-        // Evento para consultar produtos do cliente com mais vouchers
-        document.getElementById('queryUS13Button').addEventListener('click', function () {
+        document.getElementById('queryUS13Button').addEventListener('click', async function () {
             const resultDiv = document.getElementById('queryUS13Result');
-            resultDiv.innerHTML = `<p>Produtos comprados pelo cliente ${topCustomer}: (dados fictícios aqui).</p>`;
-        });
+            try {
+                const response = await fetch('/manager/queryUS13');
+                if (!response.ok) throw new Error('Failed to fetch query results.');
 
-        document.getElementById('queryUS14Form').addEventListener('submit', function (e) {
-            e.preventDefault();
+                const data = await response.json();
+                if (data.error) {
+                    resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                    return;
+                }
+
+                const { customer_name, total_vouchers, order_items } = data;
+
+                let resultHTML = `<p><strong>Cliente com mais vouchers:</strong> ${customer_name}</p>`;
+                resultHTML += `<p><strong>Total de vouchers usados:</strong> ${total_vouchers}</p>`;
+                resultHTML += `<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Preço</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                order_items.forEach(item => {
+                    resultHTML += `<tr>
+                        <td>${item.Item_Name}</td>
+                        <td>${item.Quantity}</td>
+                        <td>${item.Price.toFixed(2)}</td>
+                    </tr>`;
+                });
+                resultHTML += `</tbody></table>`;
+
+                resultDiv.innerHTML = resultHTML;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-danger">${error.message}</p>`;
+            }
+        });
+        document.getElementById('queryUS14Button').addEventListener('click', async function () {
             const resultDiv = document.getElementById('queryUS14Result');
-            resultDiv.innerHTML = `<p>Resultados das compras entre junho e 17 de agosto com as condições especificadas (dados fictícios aqui).</p>`;
+            resultDiv.innerHTML = '<p>Loading...</p>'; // Show loading message
+
+            try {
+                const response = await fetch('/manager/queryUS14');
+                if (!response.ok) throw new Error('Failed to fetch query results.');
+
+                const data = await response.json();
+                if (data.length === 0) {
+                    resultDiv.innerHTML = '<p>No purchases match the criteria.</p>';
+                    return;
+                }
+
+                let resultHTML = `
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Purchase Date</th>
+                                <th>Delivery Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                data.forEach(order => {
+                    resultHTML += `
+                        <tr>
+                            <td>${order.Order_ID}</td>
+                            <td>${order.Customer_Name}</td>
+                            <td>${new Date(order.Purchase_Date).toLocaleString()}</td>
+                            <td>${new Date(order.Delivery_Date).toLocaleString()}</td>
+                        </tr>`;
+                });
+                resultHTML += `</tbody></table>`;
+
+                resultDiv.innerHTML = resultHTML;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-danger">${error.message}</p>`;
+            }
         });
-
-
     </script>
 
 </body>

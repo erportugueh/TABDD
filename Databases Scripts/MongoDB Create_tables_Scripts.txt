@@ -1,0 +1,297 @@
+// BrowsingHistory Validator
+db.createCollection("BrowsingHistory", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["customer_id", "page", "visit_date_time"],
+      properties: {
+        customer_id: {
+          bsonType: "int",
+          description: "Client ID"
+        },
+        page: {
+          bsonType: "string",
+          description: "Accessed page URL"
+        },
+        visit_date_time: {
+          bsonType: "date",
+          description: "Visit date/time in ISODate format."
+        }
+      }
+    }
+  }
+});
+
+// Carts Validator
+db.createCollection("Carts", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["Customer_ID"],
+      properties: {
+        Customer_ID: {
+          bsonType: "int",
+          description: "must be an integer and is required"
+        },
+        Items: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["item_id", "item_name", "price", "discount", "quantity"],
+            properties: {
+              item_id: {
+                bsonType: "int",
+                description: "Unique identifier for the item."
+              },
+              item_name: {
+                bsonType: "string",
+                description: "Name of the item."
+              },
+              price: {
+                bsonType: "double",
+                minimum: 0,
+                description: "Price of the item, must be a positive number."
+              },
+              discount: {
+                bsonType: "double",
+                minimum: 0,
+                maximum: 1,
+                description: "Discount on the item, as a fraction (e.g., 0.2 for 20%)."
+              },
+              quantity: {
+                bsonType: "int",
+                minimum: 1,
+                description: "Quantity of the item in the cart, must be at least 1."
+              }
+            }
+          }
+        },
+        total_price: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Total price of all items in the cart before discounts, taxes, and shipping."
+        },
+        shipping_cost: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Shipping cost for the cart."
+        },
+        taxes: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Taxes applied to the cart."
+        },
+        total_price_final: {
+          bsonType: "double",
+          minimum: 0,
+          description: "Final total price of the cart after taxes and shipping, before voucher discount."
+        },
+        voucher_code: {
+          bsonType: ["string", "null"],
+          description: "Voucher code applied to the cart, can be null."
+        },
+        total_price_with_discount: {
+          bsonType: ["double", "null"],
+          minimum: 0,
+          description: "Final total price of the cart after applying a valid voucher discount, can be null if no voucher is applied."
+        }
+      }
+    }
+  }
+});
+
+// Orders Validator
+db.createCollection("Orders", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["Customer_ID", "Delivery_Address", "Payment_Status", "Checkout_Total", "Shipping_Status", "OrderItems"],
+      properties: {
+        Customer_ID: {
+          bsonType: "int",
+          description: "must be an integer and is required"
+        },
+        Delivery_Address: {
+          bsonType: "string",
+          maxLength: 25,
+          description: "must be a string with a maximum length of 25 and is required"
+        },
+        Payment_Status: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        Checkout_Total: {
+          bsonType: "double",
+          description: "must be a double and is required"
+        },
+        Shipping_Status: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["Status", "Timestamp"],
+            properties: {
+              Status: {
+                enum: ["processing", "preparing shipping", "shipped", "in transit", "delivered"]
+              },
+              Location: {
+                bsonType: "string"
+              },
+              Timestamp: {
+                bsonType: "date"
+              }
+            }
+          }
+        },
+        OrderItems: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["Item_ID", "Quantity", "Price"],
+            properties: {
+              Item_ID: {
+                bsonType: "int",
+                description: "must be an integer and is required"
+              },
+              Quantity: {
+                bsonType: "int",
+                description: "must be an integer and is required"
+              },
+              Price: {
+                bsonType: "double",
+                description: "must be a double and is required"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+// Products Validator
+db.createCollection("Products", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["Item_ID", "Product_Warehouse_ID", "Product_Zone_ID", "Quantity_in_Stock", "Minimum_Stock", "Price", "Category", "Subcategory", "Product_Aisle_ID"],
+      properties: {
+        Item_ID: {
+          bsonType: "int"
+        },
+        Product_Warehouse_ID: {
+          bsonType: "int"
+        },
+        Product_Zone_ID: {
+          bsonType: "int"
+        },
+        Quantity_in_Stock: {
+          bsonType: "int"
+        },
+        Minimum_Stock: {
+          bsonType: "int"
+        },
+        Price: {
+          bsonType: "double"
+        },
+        Category: {
+          bsonType: "string"
+        },
+        Subcategory: {
+          bsonType: "string"
+        },
+        Discount: {
+          bsonType: ["int", "double", "null"]
+        },
+        Technical_Info: {
+          bsonType: "array",
+          items: {
+            bsonType: "object"
+          }
+        },
+        Physical_Info: {
+          bsonType: "array",
+          items: {
+            bsonType: "object"
+          }
+        },
+        PriceHistory: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["Price", "ChangedAt"],
+            properties: {
+              Price: {
+                bsonType: "double"
+              },
+              ChangedAt: {
+                bsonType: "date"
+              }
+            }
+          }
+        },
+        Image: {
+          bsonType: "binData"
+        },
+        Product_Aisle_ID: {
+          bsonType: "int"
+        }
+      }
+    }
+  }
+});
+
+// Ratings Validator
+db.createCollection("Ratings", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["customer_id", "item_id", "rating"],
+      properties: {
+        customer_id: {
+          bsonType: "int"
+        },
+        item_id: {
+          bsonType: "int"
+        },
+        rating: {
+          bsonType: "int",
+          minimum: 1,
+          maximum: 5
+        },
+        comment: {
+          bsonType: "string"
+        }
+      }
+    }
+  }
+});
+
+// TermsAndConditions Validator
+db.createCollection("TermsAndConditions", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["Version", "Terms"],
+      properties: {
+        Version: {
+          bsonType: "int"
+        },
+        Terms: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["id", "Term_text"],
+            properties: {
+              id: {
+                bsonType: "int"
+              },
+              Term_text: {
+                bsonType: "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+});

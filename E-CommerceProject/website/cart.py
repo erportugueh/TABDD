@@ -299,7 +299,6 @@ def confirm_purchase():
         # Clear the cart
         cart.delete()
     except Exception as e:
-        print("merda")
         return render_template('checkout.html', error=f"Failed to create order: {e}"), 500
 
     # Redirect to the payment page with the order ID
@@ -311,11 +310,7 @@ def purchase_complete():
     order_id = request.form.get('order')  # Retrieve the order ID from the form
 
     try:
-        print(order_id)
-        # Ensure correct type for _id field (adjust based on your _id type in MongoDB)
         order = Order.objects(pk=int(order_id)).first() # Use int if _id is an integer
-        # order = Order.objects.get(_id=order_id)  # Use this if _id is a string
-        # order = Order.objects.get(_id=ObjectId(order_id))  # Use this if _id is ObjectId
 
     except (DoesNotExist, ValueError):
         return "Order not found or invalid ID", 404

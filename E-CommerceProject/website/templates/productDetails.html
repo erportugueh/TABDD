@@ -353,13 +353,15 @@
                 </div>
 
                 {% if current_user.is_authenticated %}
-                <button class="btn-add-to-cart" id="add-to-cart-btn">
-                    <a href="" style="color: white; text-decoration: none;">Adicionar ao Carrinho</a>
-                </button>
+                <form action="/cart/add" method="POST" style="text-align: center;">
+                    <input type="hidden" name="customer_id" value="{{ current_user.get_id() }}">
+                    <input type="hidden" name="item_id" value="{{ product.item_id }}">
+                    <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
+                </form>
 
                 {%else%}
                 <button class="btn-add-to-cart" id="add-to-cart-btn">
-                    <a href="/sign-up" style="color: white; text-decoration: none;">Adicionar ao Carrinho</a>
+                    <a href="/login" style="color: white; text-decoration: none;">Adicionar ao Carrinho</a>
                 </button>
                 {%endif%}
 

@@ -1,0 +1,524 @@
+Requirements Specifications and Analysis
+
+------------------US 2
+
+#only use mongodb
+def product_info(product_id):
+    result_US2 = db.Products.find({"_id": product_id})
+
+    return list(result_US2)
+
+------------------US 5
+
+def status_order(order_id):
+    result_US5 = db.Orders.aggregate([
+        {"$match": {"_id": order_id}},
+        {"$unwind": "$Shipping_Status"},  
+        {"$sort": {"Shipping_Status.Timestamp": -1}}, 
+        {"$limit": 1}, 
+        {"$project": {"Shipping_Status.Status": 1, "_id": 0}} 
+    ])
+
+    return list(result_US5)
+
+------------------US 6 adn 7
+
+def suppliers_best_selling_products():
+
+    #simulation of mv
+    db.Orders.aggregate([
+        { "$unwind": "$OrderItems" },
+        { 
+            "$group": {  
+                "_id": "$OrderItems.Item_ID", 
+                "total_quantity": { "$sum": "$OrderItems.Quantity" },
+                "purchase_dates": { "$addToSet": "$Purchase_date" }
+            }
+        },
+        
+        { "$sort": { "total_quantity": -1 } }, 
+        { "$limit": 10 },
+
+        { "$lookup": {
+            "from": "Products",
+            "localField": "_id",
+            "foreignField": "Item_ID",
+            "as": "product_details"
+            }
+        },
+
+        {"$project": {
+            "_id": 0,
+            "item_id": "$_id",
+            "total_quantity": 1, 
+            "purchase_dates": 1
+            }
+        },
+
+        { "$out": "top_selling_products" } #save in a new collection
+    ])
+
+    top_items = list(db.top_selling_products.find({},{"_id":0, "item_id":1}))
+    top_item_ids = [str(item["item_id"]) for item in top_items if item.get("item_id") is not None]
+
+
+    if top_item_ids and top_items[0] is not None:
+        item_ids_str = ",".join(top_item_ids)
+        
+        oracle_query_US6 = f"""
+        select  si.Item_ID,
+        s.Name
+        from Suppliers s 
+        join SupplierItems si on s.Supplier_ID = si.Supplier_ID
+        where si.Item_ID in ({item_ids_str})"""
+
+        # execute the query
+        cursor.execute(oracle_query_US6) 
+        result_US6 = cursor.fetchall()
+
+        return result_US6
+    
+    else:
+        return('No top selling products found')
+
+------------------US 8
+
+def most_rated_items():
+    #simulation of mv
+
+    db.Ratings.aggregate([
+        {"$group": {
+            "_id": "$item_id",
+            "vote_count": {"$sum": 1} 
+        }},
+        
+        {"$sort": {"vote_count": -1}},
+        {"$limit": 10},
+
+        {"$lookup": { 
+            "from": "Products", 
+            "localField": "_id", 
+            "foreignField": "Item_ID", 
+            "as": "product_details"
+            }
+        },
+
+        {"$project": {
+            "_id": 0,
+            "item_id": "$_id",
+            "vote_count": 1
+            }
+        },
+        
+        { "$out": "most_rated_products" } #save in a new collection
+    ])
+
+    most_rated_items = list(db.most_rated_products.find({},{"_id":0, "item_id":1, "vote_count":1}))
+    most_rated_item_ids = [item["item_id"] for item in most_rated_items if item.get("item_id") is not None]
+
+    if most_rated_item_ids:
+        items_id_str = ', '.join([str(i) for i in most_rated_item_ids])
+
+        item_votes = {item["item_id"]: item["vote_count"] for item in most_rated_items}
+
+        oracle_query_US8 = f"""
+        select 
+            i.Item_ID,
+            i.Name as Item_Name,
+            s.Name as Supplier_Name
+        from Items i
+        join SupplierItems si on i.Item_ID = si.Item_ID
+        join Suppliers s on si.Supplier_ID = s.Supplier_ID
+        where i.Item_ID in ({items_id_str})
+        """
+
+        # execute the query
+        cursor.execute(oracle_query_US8)
+        result_query = cursor.fetchall()
+
+        result_US8 = [
+            {
+                "Item_ID": row[0],
+                "Item_Name": row[1],
+                "Supplier_Name": row[2],
+                "Vote_Count": item_votes.get(row[0], 0)
+            }
+            for row in result_query
+        ]
+
+        return result_US8
+
+    else:
+        return('No rated products found')
+
+------------------US 9
+
+def products_low_stock():
+        
+    #simulation of mv
+
+    db.Products.aggregate([
+        {"$match": {
+            "$expr":{
+                "$lte": ["$quantity_in_stock",  "$minimum_stock" ]
+            }
+        }
+        },
+        {"$lookup": { 
+            "from": "Products",     
+            "localField": "_id", 
+            "foreignField": "Item_ID", 
+            "as": "product_details"
+            }
+        },
+
+        {"$project": {
+            "_id": 0,
+            "item_id": 1,
+            "quantity_in_stock": 1,
+            "minimum_stock": 1
+            }
+        },
+        
+        { "$out": "products_below_minimum_stock" } #save in a new collection
+    ])
+
+    
+    products_below_stock = list(db.products_below_minimum_stock.find({}, {
+        "item_id": 1,
+        "quantity_in_stock": 1,
+        "minimum_stock": 1,
+        "_id": 0
+    }))
+
+
+    # Intentar eliminar la tabla temporal si ya existe
+    try:
+        cursor.execute("""
+            drop table Products_Below_Stock_Temp
+        """)
+    except Exception as e:
+        pass
+
+    # Crear la tabla temporal
+    cursor.execute("""
+        create global temporary table Products_Below_Stock_Temp (
+            item_id int,
+            quantity_in_stock int,
+            minimum_stock int
+        ) on commit delete rows
+    """)
+
+
+    for product in products_below_stock:
+        cursor.execute("""
+        insert into Products_Below_Stock_Temp (item_id, quantity_in_stock, minimum_stock)
+        values (:1, :2, :3)
+        """, (product['item_id'], product['quantity_in_stock'], product['minimum_stock']))
+
+    oracle_query_US9 = f"""
+    select 
+        i.Description,	
+        i.Name AS Item_Name, 
+        i.Brand, 
+        p.quantity_in_stock, 
+        p.minimum_stock, 
+        s.Name as Supplier_Name
+    from Items i 
+    join SupplierItems si on i.Item_ID = si.Item_ID 
+    join Suppliers s on si.Supplier_ID = s.Supplier_ID
+    join Products_Below_Stock_Temp p on i.Item_ID = p.Item_ID 
+    where i.Item_ID in (select item_id from Products_Below_Stock_Temp)
+    """
+
+    #execute the query
+    cursor.execute(oracle_query_US9)
+    result_US9 = cursor.fetchall()
+    if len(result_US9) == 0:
+        return ('No products below minimun stock')
+
+    else:
+        return result_US9
+
+------------------US 10
+
+def aisle_info():
+    greater_discount = list(db.Orders.aggregate([
+    {"$match": {"Discount": {"$gt": 0.2}}},
+
+    {"$unwind": "$OrderItems"},
+
+    {
+    "$group": {
+        "_id": "$OrderItems.FK_Item_ID",
+        "total_orders": {"$sum": 1} 
+    }
+    },
+
+    {"$sort": {"total_orders": -1}}
+    ]))
+
+
+    greater_discount_ids = [item["_id"] for item in greater_discount]
+
+    greater_discount_aisles = list(db.Products.find({"Product_ID": {"$in": greater_discount_ids}}, {'_id':1, 'Product_Aisle_ID':1}))
+
+    aisles_id = [item["Product_Aisle_ID"] for item in greater_discount_aisles]
+    aisles_id_str = ', '.join([str(i) for i in aisles_id])
+    
+    oracle_query_US10 = f"""
+    select 
+        a.Aisle_ID,
+        a.Capacity,
+        a.Warehouse_ID,
+        a.Zone_ID
+    from Aisles a
+    where a.Aisle_ID in ({aisles_id_str})
+    """
+
+    # execute the query
+    cursor.execute(oracle_query_US10)
+    result_US10= cursor.fetchall()
+
+    return result_US10
+
+------------------US 11
+
+def order_location(date_time):
+    date_and_time = datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S.%f%z")
+
+    result_US11 = db.Orders.find({
+        "Purchase_date" : date_and_time
+    }, {
+        "Customer_ID": 1,
+        "Purchase_date": 1,
+        "Shipping_Status.Location" : 1
+    })
+
+    return list(result_US11)
+
+------------------US 12
+
+def route(order_id):
+    result_US12 = db.Orders.aggregate([
+        {
+            "$match": { "_id": order_id}
+        },         
+        {
+            "$unwind": "$Shipping_Status" 
+        },
+        {
+            "$sort": { "Shipping_Status.Timestamp": 1 } 
+        },
+        {
+            "$project": {
+                "Order_ID": 1,
+                "Shipping_Status.Location": 1,
+            }
+        }
+    ])
+
+    return list(result_US12)
+
+
+------------------US 13
+
+def highest_vouchers():
+    pipeline_US13 = [
+        {"$match": {"Voucher_code": {"$exists": True, "$ne": None}}},
+        {"$group": {  
+            "_id": "$Customer_ID",  
+            "total_count_vouchers": {"$sum": 1}  
+        }},
+        {"$sort": {"total_count_vouchers": -1}},  
+        {
+            "$limit": 1
+        }
+
+    ]
+
+    top_voucher_customer = list(db.Orders.aggregate(pipeline_US13))
+    if top_voucher_customer:
+        customer_id = top_voucher_customer[0]['_id']
+
+        result_US13 = db.Orders.find_one({"Customer_ID" : customer_id},{"OrderItems" : 1, "_id" : 0})
+
+        return result_US13
+
+    else:
+        print('No customer found with vouchers')
+
+------------------US 14
+
+import pytz
+
+
+def us14():
+    start_date = datetime(2024, 6, 1, 0, 0, 0, tzinfo=pytz.UTC)
+    end_date = datetime(2024, 8, 17, 23, 59, 59, tzinfo=pytz.UTC)
+    
+    result_US14 = list(db.Orders.find(
+        {
+            "Purchase_date":{"$gte": start_date, "$lte": end_date },
+            "Preparation_time": {"$lt":10},
+            "$expr": {
+                "$gt": [
+                    { "$subtract": ["$Delivery_date", "$Purchase_date"] },
+                    10 * 24 * 60 * 60 * 1000          #10 days in milliseconds, because Mongo processes dates in milliseconds
+                ]}
+        }
+    ))
+
+    if not result_US14:
+        return('No orders with that characteristics')
+        
+    return result_US14
+
+------------------US 17
+
+#we can use the aggregation created for the US6, top_selling_products
+
+def us17():
+  current_date = datetime.now()
+  start_date = current_date - timedelta(days=6*30)
+
+  result_us17 = db.top_selling_products.aggregate([
+    {
+          "$unwind": "$purchase_dates"
+      },
+    {
+      "$match": {
+        "purchase_dates": {"$gte": start_date}
+      }
+    },
+    {
+      "$project": {
+        "item_id": 1, 
+        "total_quantity": 1,
+        "year": { "$year": "$purchase_dates" }, 
+        "month": { "$month": "$purchase_dates" } 
+      }
+    },
+    {
+      "$group": {
+        "_id": { "year": "$year", "month": "$month", "item_id": "$item_id" },
+        "total_quantity": { "$sum": "$total_quantity" }
+      }
+    },
+    {
+      "$sort": { "_id.year": 1, "_id.month": 1, "total_quantity": -1 }
+    },
+    {
+      "$group": {
+        "_id": { "year": "$_id.year", "month": "$_id.month" },
+        "topProducts": { "$push": { "item_id": "$_id.item_id", "total_quantity": "$total_quantity" } }
+      }
+    },
+    {
+      "$project": {
+        "_id": 1,
+        "topProducts": { "$slice": ["$topProducts", 5] }
+      }
+    },
+    {
+      "$sort": { "_id.year": 1, "_id.month": 1 }
+    }
+  ])
+
+  return list(result_us17)
+  
+  
+
+------------------US 18
+
+def site_visits():
+        
+    current_year = datetime.now().year
+
+    pipeline = [
+        {
+            "$match": {
+                "$expr": {
+                    "$eq": [{ "$year": "$visit_date" }, current_year] 
+                }
+            }
+        },
+
+        {
+            "$project": {
+                "page": 1,
+                "visit_date": 1,
+                "visit_day": { "$dayOfYear": "$visit_date" }, 
+                "visit_week": { "$isoWeek": "$visit_date" }, 
+            }
+        },
+
+        {
+            "$group": {
+                "_id": { "page": "$page", "visit_day": "$visit_day" }, 
+                "visits_per_day": { "$sum": 1 }, 
+            }
+        },
+
+        {
+            "$sort": { "_id.page": 1, "_id.visit_day": 1 },
+        },
+        {
+            "$group": {
+                "_id": { "page": "$_id.page", "visit_day": "$_id.visit_day", "visit_week": "$_id.visit_week" },  
+                "visits_per_week": { "$sum": "$visits_per_day" },  
+            }
+        },
+
+        {
+            "$sort": { "_id.page": 1, "_id.visit_week": 1 },
+        },
+    ]
+
+    result_us18 = list(db.BrowsingHistory.aggregate(pipeline))
+    if not result_us18:
+        return ("No visit pages this year")
+    return result_us18
+
+------------------US 19
+
+def US19():
+  most_popular_pages = list(db.BrowsingHistory.aggregate([
+    {
+      "$group": {
+        "_id": "$page",
+        "visit_count": { "$sum": 1 },
+        "customer_ids": { "$addToSet": "$customer_id" }
+      }
+    },
+    {
+      "$sort": { "visit_count": -1 }
+    },
+    {
+      "$limit": 10
+    }
+  ]))
+
+  customer_ids = []
+  for page in most_popular_pages:
+    customer_ids.extend(page["customer_ids"])
+
+  customer_ids_str = ', '.join([str(i) for i in customer_ids])
+
+  '''oracle_query_US19 = f""""
+    select 
+      Address
+    from Customers 
+    where Customer_ID in ({customer_ids_str})
+    """
+  cursor.execute(oracle_query_US19)
+  geographical_location = cursor.fetchall()
+  print(geographical_location)'''
+  
+  
+  result_US19 = {
+          "most_popular_pages": most_popular_pages,  
+          #"geographical_location": geographical_location
+      }
+
+  return result_US19

@@ -227,55 +227,94 @@
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById("submitPedido").addEventListener("click", function () {
-            const nomePedido = document.getElementById("nomePedido").value;
-            const dataPedido = document.getElementById("dataPedido").value;
-            const horaPedido = document.getElementById("horaPedido").value;
+        document.getElementById('submitPedido').addEventListener('click', async function () {
+            const nomePedido = document.getElementById('nomePedido').value;
+            const dataPedido = document.getElementById('dataPedido').value;
+            const horaPedido = document.getElementById('horaPedido').value;
 
-            if (nomePedido && dataPedido && horaPedido) {
-                // Simula uma localização retornada
-                const localizacaoSimulada = `Rua Aleatória, Nº 123, Porto`;
-                document.getElementById("localizacaoTexto").textContent = localizacaoSimulada;
+            if (!dataPedido || !horaPedido) {
+                alert("Please provide a valid date and time.");
+                return;
+            }
 
-                // Mostra a secção de localização
-                document.getElementById("resultadoLocalizacao").style.display = "block";
-            } else {
-                alert("Por favor, preencha todos os campos.");
+            try {
+                const response = await fetch('/deliveryOrderManager/queryUS11', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nomePedido, date: dataPedido, time: horaPedido })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // Prepare and display the result
+                const resultadoDiv = document.getElementById('resultadoLocalizacao');
+                const localizacaoTexto = document.getElementById('localizacaoTexto');
+                localizacaoTexto.innerHTML = ''; // Clear previous results
+
+                if (Object.keys(data).length === 0) {
+                    localizacaoTexto.textContent = "No shipping statuses found before the specified date and time.";
+                } else {
+                    const { Status, Location, Timestamp } = data;
+                    const resultText = `${Status}: ${Location} at ${new Date(Timestamp).toLocaleString()}`;
+                    localizacaoTexto.textContent = resultText;
+                }
+
+                resultadoDiv.style.display = 'block';
+            } catch (error) {
+                console.error("Error fetching US11 results:", error);
             }
         });
 
 
-        document.getElementById("submitRotaPedido").addEventListener("click", function () {
-            const nomePedidoRota = document.getElementById("nomePedidoRota").value;
 
-            if (nomePedidoRota) {
-                // Simula localizações associadas ao pedido
-                const localizacoesSimuladas = [
-                    "Rua Aleatória, Nº 123, Porto",
-                    "Av. Principal, Nº 456, Lisboa",
-                    "Praça Central, Nº 789, Coimbra"
-                ];
+        document.getElementById('submitRotaPedido').addEventListener('click', async function () {
+            const nomePedidoRota = document.getElementById('nomePedidoRota').value;
 
-                // Limpa a lista anterior
-                const listaLocalizacoes = document.getElementById("listaLocalizacoes");
-                listaLocalizacoes.innerHTML = "";
+            if (!nomePedidoRota) {
+                alert("Please provide a valid order ID.");
+                return;
+            }
 
-                // Adiciona as localizações simuladas à lista
-                localizacoesSimuladas.forEach(localizacao => {
-                    const li = document.createElement("li");
-                    li.textContent = localizacao;
+            try {
+                const response = await fetch('/deliveryOrderManager/queryUS12', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: nomePedidoRota })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const rotaDiv = document.getElementById('rotaLocalizacoes');
+                const listaLocalizacoes = document.getElementById('listaLocalizacoes');
+                listaLocalizacoes.innerHTML = '';
+
+                data.forEach(loc => {
+                    const li = document.createElement('li');
+                    const status = loc.Shipping_Status.Status || "Unknown Status";
+                    const location = loc.Shipping_Status.Location || "Unknown Location";
+                    const timestamp = new Date(loc.Shipping_Status.Timestamp).toLocaleString();
+
+                    li.textContent = `${status}: ${location} at ${timestamp}`;
                     listaLocalizacoes.appendChild(li);
                 });
 
-                // Mostra a secção de localizações
-                document.getElementById("rotaLocalizacoes").style.display = "block";
-            } else {
-                alert("Por favor, introduza o nome do pedido.");
+                rotaDiv.style.display = 'block';
+            } catch (error) {
+                console.error("Error fetching US12 results:", error);
             }
         });
+
     </script>
+
 
 </body>
 

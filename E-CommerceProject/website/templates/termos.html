@@ -1,134 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termos e Condições</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link para o CSS externo -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .terms-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .terms-container h1 {
+            text-align: center;
+            font-size: 24px;
             color: #333;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
+        .terms-container ul {
+            padding-left: 20px;
         }
 
-        h1 {
-            text-align: center;
-            color: #444;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .section h2 {
-            font-size: 1.5em;
+        .terms-container li {
             margin-bottom: 10px;
-            color: #555;
         }
-
-        .section p {
-            text-align: justify;
-        }
-
-        .highlight {
-            background-color: #e8f4fa;
-            padding: 10px;
-            border-left: 4px solid #007BFF;
-            margin-bottom: 20px;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #343a40;
-            color: white;
-        }
-
-        .btn-help {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 16px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        
-        .btn-help i {
-            font-size: 18px;
-        }
-        
-        .btn-help:hover {
-            background-color: #0056b3;
-            transform: scale(1.1);
-        }
-        
     </style>
 </head>
+
 <body>
-
-    <a href="/help" class="btn-help">
-        <i class="bi bi-question-circle me-2"></i> Help
-    </a>
-    <div class="container">
-        <a href="/" class="btn btn-outline-primary">
-            <i class="bi bi-arrow-left-circle me-2"></i> Voltar para a Home
-        </a>
+    <div class="terms-container">
         <h1>Termos e Condições</h1>
-
-        <div class="section">
-            <p class="highlight">
-                Termos e Condições de Compra e Venda da <strong>Loja XPTOISEP</strong>, com sede na Rua dos Exemplos, n.º 1234, doravante denominada simplesmente <strong>Loja XPTOISEP</strong>, e, de outro lado, o cliente qualificado no momento da compra dos produtos da <strong>Loja XPTOISEP</strong>, doravante denominado simplesmente <strong>Cliente</strong>.
-            </p>
-        </div>
-
-        <div class="section">
-            <h2>I. Confidencialidade</h2>
-            <p>
-                É de responsabilidade da <strong>Loja XPTOISEP</strong> a preservação da confidencialidade de todos os dados e informações fornecidos pelo <strong>Cliente</strong> no processo de compra. A segurança do site é auditada periodicamente e garantida contra a ação de hackers através do selo de segurança "Plataforma Segura".
-            </p>
-        </div>
-
-        <div class="section">
-            <h2>II. Política de Entrega</h2>
-            <p>
-                As entregas dos produtos serão realizadas no endereço indicado pelo <strong>Cliente</strong> no momento da compra. Os prazos de entrega podem variar de acordo com a localização e a modalidade de envio selecionada.
-            </p>
-        </div>
-
-        <div class="section">
-            <h2>III. Garantia e Devoluções</h2>
-            <p>
-                A <strong>Loja XPTOISEP</strong> oferece garantia para os produtos comercializados conforme as especificações indicadas na descrição de cada item. Em caso de defeito de fabricação ou insatisfação, o <strong>Cliente</strong> poderá solicitar a devolução ou troca do produto dentro do prazo legal.
-            </p>
-        </div>
-     
-    </div>
-       <!-- Footer -->
-       <div class="footer">
-        <p>© 2024 Ecommerce. Instituto Superior de Engenharia do Porto.</p>
-        <p>Por: Elmer | Francisca | Rebeca | Vasco</p>
+        <ul>
+            {% for term in terms['Terms'] %}
+            <li>{{ term['id'] }}. {{ term['Term_text'] }}</li>
+            {% endfor %}
+        </ul>
+        <button onclick="window.close()">Fechar</button>
     </div>
 </body>
+
 </html>

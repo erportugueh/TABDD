@@ -132,17 +132,30 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         My Account
                     </a>
-                    <ul class="dropdown-menu" id="employeeDropdown" aria-labelledby="navbarDropdown">
-                        {% if current_user.role == 'Delivery Order Manager' %}
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if current_user.type == 'Customer' %}
+                        <li><a class="dropdown-item" href="/profile/{{ current_user.customer_id }}">Seu perfil</a></li>
+                        <li><a class="dropdown-item" href="/activeOrders/{{ current_user.customer_id }}">Ordens
+                                Ativas</a></li>
+                        <li><a class="dropdown-item" href="/OrdersReviews/{{ current_user.customer_id }}">Minhas Ordens
+                                e Avaliações</a></li>
+                        {% elif current_user.role == 'Delivery Order Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
                         <li><a class="dropdown-item" href="/deliveryOrderManager">Delivery Orders Management</a></li>
                         {% elif current_user.role == 'Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
                         <li><a class="dropdown-item" href="/manager">Management</a></li>
                         {% elif current_user.role == 'CIO' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
                         <li><a class="dropdown-item" href="/cio">CIO Management</a></li>
                         {% elif current_user.role == 'Warehouse Manager' %}
+                        <li><a class="dropdown-item" href="/profileEmployee/{{ current_user.employee_id}}">Account
+                                Info</a></li>
                         <li><a class="dropdown-item" href="/warehouseManager">Warehouse Management</a></li>
                         {% endif %}
-                        <li><a class="dropdown-item" href="/userDetails">Account Info</a></li>
                     </ul>
                 </li>
             </ul>

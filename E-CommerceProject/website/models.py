@@ -6,6 +6,7 @@ from mongoengine import (
     Document, EmbeddedDocument, fields, EmbeddedDocumentField, ListField, IntField, StringField, FloatField, DateTimeField, DynamicEmbeddedDocument
 )
 from datetime import datetime
+import random
 
 # Oracle Tables
 class Customer(db.Model, UserMixin):
@@ -213,6 +214,13 @@ class OrderItem(EmbeddedDocument):
     Item_ID = IntField(required=True, description="Foreign key to the Item ID.")
     Quantity = IntField(required=True, description="Quantity of the item ordered.")
     Price = FloatField(required=True, description="Price of the item ordered.")
+    Discount = FloatField(
+        required=True,
+        description="Discount on the item ordered.",
+        min_value=0.0,
+        max_value=0.75,
+        default=lambda: round(random.uniform(0.0, 0.75), 2)  # Generates a random discount
+    )
 
 class Order(Document):
     meta = {'collection': 'Orders'}  # Specify the correct collection name

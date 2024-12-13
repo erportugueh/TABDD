@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from .models import Product, Item, Rating, Customer
 import os
+from .admin import dbmongo
 from random import sample
+import logging
+from pymongo import DESCENDING
 
 views = Blueprint('views', __name__)
 
@@ -15,13 +18,34 @@ def home():
         products_data.append(product)
     return render_template('home.html', products=products_data)
 
+
+from flask import render_template, jsonify
+from pymongo import DESCENDING
+
+
+@views.route('/termos', methods=['GET'])
+def termos():
+    try:
+        # Fetch the latest version of terms from MongoDB
+        latest_terms = dbmongo['TermsAndConditions'].find_one({}, sort=[("Version", DESCENDING)])
+
+        if not latest_terms:
+            return jsonify({"error": "No terms found."}), 404
+
+        # Pass the terms to the template
+        return render_template('termos.html', terms=latest_terms)
+    except Exception as e:
+        logging.error(f"Error fetching terms: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+
 @views.route('/search', methods=['GET'])
 def search():
 
     search_query = request.args.get('query')  # Use 'form.get()' for POST method
     print(search_query)
     if search_query:
-        # Perform the search (MongoDB example)
+        # Perform the search
         products = Product.objects(category__icontains=search_query)
         if products:
             products_data = []
@@ -107,3 +131,4 @@ def get_product(id):
         "image": image_path
     }
     return product
+
